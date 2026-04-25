@@ -1,2 +1,4 @@
 /App/node_modules
 /App/.env
+/App/build
+plan.md

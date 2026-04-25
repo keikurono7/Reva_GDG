@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import TopTabs from "./TopTabs";
 import Issues from "./Issues";
@@ -13,27 +14,31 @@ import Chatbot from "./Chatbot";
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("issues");
 
-  // read user from localStorage
-  const session =
+  // read user from localStorage into state so UI updates on logout
+  const [session, setSession] = useState(
     typeof window !== "undefined"
       ? JSON.parse(localStorage.getItem("Pratinidhi_user") || "null")
-      : null;
+      : null
+  );
+
+  const handleLogout = () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("Pratinidhi_user");
+      setSession(null);
+      navigate("/");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#fffdf9_0%,#fbf5ec_100%)] p-6 text-slate-900">
 
-      {/* ---------- HEADER WITH USER ---------- */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-
-        <div className="flex items-center gap-3 rounded-2xl border border-white bg-white/90 px-4 py-2 shadow-sm">
-          <User className="w-5 h-5 text-amber-500" />
-          <span className="font-semibold">{session?.username || "Guest"}</span>
-        </div>
-      </div>
-
       {/* ---------- TABS ---------- */}
-      <TopTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+      <TopTabs
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        username={session?.username}
+        onLogout={handleLogout}
+      />
 
       {/* ---------- CONTENT ---------- */}
       <div className="container mx-auto mt-6">
