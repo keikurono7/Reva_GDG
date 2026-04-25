@@ -9,7 +9,7 @@ Theme: **Peacebuilding & Conflict Prevention** · SDG 16: Peace, Justice & Stron
 
 ## The Problem
 
-Bengaluru has 9 million people. When BBMP announces a new infrastructure project, citizens find out after the tender is signed. When a local MLA resolves an issue, no one knows. When community tensions around a policy escalate, there is no early warning — only protests.
+Bengaluru has 14.77 million people. When BBMP announces a new infrastructure project, citizens find out after the tender is signed. When a local MLA resolves an issue, no one knows. When community tensions around a policy escalate, there is no early warning — only protests.
 
 The governance system lacks:
 - Structured platforms for **pre-policy public consultation**
