@@ -349,7 +349,15 @@ export default function PoliticianDashboard() {
         party: profile?.party || null,
         image_blob: image_blob || null,
         image_base64: image_base64 || null,
-        created_at: serverTimestamp()
+        created_at: serverTimestamp(),
+        ...(uploadType === "bill"
+          ? {
+              version: 1,
+              changesCount: 0,
+              latestChangeSummary: "Initial bill draft published",
+              updated_at: serverTimestamp(),
+            }
+          : {}),
       });
 
       setUploadTitle("");
