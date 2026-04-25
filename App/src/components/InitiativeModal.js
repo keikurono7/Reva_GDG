@@ -29,12 +29,9 @@ export default function InitiativeModal({ item, onClose }) {
   const [score, setScore] = useState(item.votes || 0);
   const [userVote, setUserVote] = useState(0);
   const [loading, setLoading] = useState(false);
-
-  // comments
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
 
-  /* Load comments live */
   useEffect(() => {
     const q = query(
       collection(db, "initiatives", item.id, "comments"),
@@ -48,7 +45,6 @@ export default function InitiativeModal({ item, onClose }) {
     return () => unsub();
   }, [item.id]);
 
-  /* Load user's previous vote */
   useEffect(() => {
     if (!username) return;
 
@@ -62,9 +58,8 @@ export default function InitiativeModal({ item, onClose }) {
         });
       } catch {}
     })();
-  }, [item.id]);
+  }, [item.id, username]);
 
-  /* Handle Voting */
   const handleVote = async (value) => {
     if (!username) return alert("Login to vote.");
 
@@ -101,7 +96,6 @@ export default function InitiativeModal({ item, onClose }) {
     }
   };
 
-  /* Add comment */
   const handleComment = async () => {
     if (!newComment.trim()) return;
     if (!username) return alert("Login to comment.");
@@ -119,40 +113,36 @@ export default function InitiativeModal({ item, onClose }) {
 
   return (
     <motion.div
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
       <motion.div
-        className="bg-gray-900 p-6 rounded-2xl w-full max-w-2xl border border-white/10"
+        className="w-full max-w-2xl rounded-3xl border border-white bg-white p-6 text-slate-900"
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
       >
-        {/* HEADER */}
-        <div className="flex justify-between mb-4">
+        <div className="mb-4 flex justify-between">
           <div>
             <h2 className="text-2xl font-bold">{item.title}</h2>
-            <p className="text-gray-400 text-sm">By {item.author}</p>
+            <p className="text-sm text-slate-500">By {item.author}</p>
           </div>
 
-          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-xl">
+          <button onClick={onClose} className="rounded-xl p-2 hover:bg-slate-100">
             <X />
           </button>
         </div>
 
-        {/* IMAGE */}
-        {img && <img src={img} className="w-full h-64 object-cover rounded-xl mb-4" />}
+        {img && <img src={img} alt={item.title} className="mb-4 h-64 w-full rounded-xl object-cover" />}
 
-        {/* DESCRIPTION */}
-        <p className="text-gray-300 mb-4">{item.description}</p>
+        <p className="mb-4 text-slate-600">{item.description}</p>
 
-        {/* VOTING */}
-        <div className="flex items-center gap-3 mb-4">
+        <div className="mb-4 flex items-center gap-3">
           <button
             disabled={loading}
             onClick={() => handleVote(1)}
-            className={`px-4 py-2 rounded-xl flex items-center gap-2 ${
-              userVote === 1 ? "bg-green-600" : "bg-white/10"
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 ${
+              userVote === 1 ? "bg-emerald-600 text-white" : "border border-slate-200 bg-slate-50 text-slate-700"
             }`}
           >
             <ThumbsUp /> Upvote
@@ -161,48 +151,46 @@ export default function InitiativeModal({ item, onClose }) {
           <button
             disabled={loading}
             onClick={() => handleVote(-1)}
-            className={`px-4 py-2 rounded-xl flex items-center gap-2 ${
-              userVote === -1 ? "bg-red-600" : "bg-white/10"
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 ${
+              userVote === -1 ? "bg-rose-600 text-white" : "border border-slate-200 bg-slate-50 text-slate-700"
             }`}
           >
             <ThumbsDown /> Downvote
           </button>
 
-          <div className="ml-auto font-bold text-yellow-300">Score: {score}</div>
+          <div className="ml-auto font-bold text-amber-600">Score: {score}</div>
         </div>
 
-        {/* COMMENTS */}
-        <h3 className="text-lg font-bold mb-2">Comments</h3>
+        <h3 className="mb-2 text-lg font-bold">Comments</h3>
 
-        <div className="max-h-60 overflow-y-auto mb-3 space-y-2 p-2 bg-white/5 rounded-xl border border-white/10">
+        <div className="mb-3 max-h-60 space-y-2 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50 p-2">
           {comments.map((c) => (
-            <div key={c.id} className="p-3 bg-white/10 rounded-xl">
-              <div className="text-yellow-400 text-sm">{c.author}</div>
+            <div key={c.id} className="rounded-xl bg-white p-3">
+              <div className="text-sm text-amber-600">{c.author}</div>
               <div>{c.text}</div>
-              <div className="text-gray-500 text-xs mt-1">
+              <div className="mt-1 text-xs text-slate-400">
                 {c.created_at?.toDate?.() &&
                   c.created_at.toDate().toLocaleTimeString()}
               </div>
             </div>
           ))}
           {comments.length === 0 && (
-            <div className="text-gray-400 text-center">No comments yet.</div>
+            <div className="text-center text-slate-500">No comments yet.</div>
           )}
         </div>
 
-        {/* COMMENT INPUT */}
         <div className="flex gap-2">
           <input
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Write a comment…"
-            className="flex-1 p-3 bg-white/10 rounded-xl border border-white/10"
+            placeholder="Write a comment..."
+            className="flex-1 rounded-xl border border-slate-200 bg-slate-50 p-3 outline-none focus:border-amber-300"
           />
           <button
             onClick={handleComment}
-            className="px-4 bg-gradient-to-r from-yellow-500 to-red-500 rounded-xl"
+            className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 text-white"
           >
-            <Send className="w-5 h-5" />
+            <Send className="h-5 w-5" />
           </button>
         </div>
       </motion.div>

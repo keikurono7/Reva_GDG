@@ -345,7 +345,7 @@ function Ministers() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-red-950 to-gray-900 text-white p-6">
+    <div className="py-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -356,7 +356,7 @@ function Ministers() {
           <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-yellow-400 to-red-500 bg-clip-text text-transparent">
             Ministers Directory
           </h1>
-          <p className="text-gray-400">
+          <p className="text-slate-600">
             Search and explore profiles of government ministers
           </p>
         </div>
@@ -370,7 +370,7 @@ function Ministers() {
               placeholder="Search by name, position, party, or constituency..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-12 py-4 bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500 transition-all"
+              className="w-full pl-12 pr-12 py-4 bg-white/92 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-yellow-500 transition-all"
             />
             {searchTerm && (
               <button
@@ -384,7 +384,7 @@ function Ministers() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-6 overflow-x-auto pb-2">
+          <div className="flex gap-4 mb-6 overflow-x-auto pb-2">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -405,13 +405,13 @@ function Ministers() {
         {loading && (
           <div className="text-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto mb-4"></div>
-            <p className="text-gray-400">Loading ministers...</p>
+            <p className="text-slate-600">Loading ministers...</p>
           </div>
         )}
 
         {/* Results Count */}
         {!loading && (
-          <p className="text-gray-400 mb-4">
+          <p className="text-slate-600 mb-4">
             Found {filteredMinisters.length} minister{filteredMinisters.length !== 1 ? 's' : ''}
           </p>
         )}
@@ -419,21 +419,21 @@ function Ministers() {
         {/* Ministers Grid */}
         {!loading && filteredMinisters.length > 0 && (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredMinisters.map((minister) => (
+              {filteredMinisters.map((minister) => (
               <motion.div
                 key={minister.id}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 whileHover={{ scale: 1.02 }}
                 onClick={() => setSelectedMinister(minister)}
-                className="p-6 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/10 cursor-pointer hover:border-yellow-500/50 transition-all"
+                  className="p-6 bg-white/92 rounded-2xl border border-slate-200 cursor-pointer hover:border-amber-400/50 transition-all shadow-sm"
               >
                 <div className="flex items-start gap-4 mb-4">
-                  {minister.profileImage ? (
+                    {minister.profileImage ? (
                     <img
                       src={minister.profileImage}
                       alt={minister.name}
-                      className="w-16 h-16 rounded-full object-cover border-2 border-yellow-500"
+                        className="w-16 h-16 rounded-full object-cover border-2 border-amber-500"
                     />
                   ) : (
                     <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-red-500 rounded-full flex items-center justify-center">
@@ -443,13 +443,13 @@ function Ministers() {
                   
                   <div className="flex-1">
                     <h3 className="text-xl font-bold mb-1">{minister.name}</h3>
-                    <p className="text-sm text-yellow-400 mb-1">{minister.post}</p>
-                    <p className="text-xs text-gray-400">{minister.party}</p>
+                    <p className="text-sm text-amber-600 mb-1">{minister.post}</p>
+                    <p className="text-xs text-slate-600">{minister.party}</p>
                   </div>
                 </div>
 
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center gap-2 text-gray-300">
+                  <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2 text-slate-600">
                     <MapPin className="w-4 h-4 text-gray-400" />
                     <span>{minister.constituency}</span>
                   </div>
@@ -473,9 +473,9 @@ function Ministers() {
         {/* No Results */}
         {!loading && filteredMinisters.length === 0 && (
           <div className="text-center py-20">
-            <Search className="w-16 h-16 mx-auto mb-4 text-gray-500" />
+            <Search className="w-16 h-16 mx-auto mb-4 text-slate-400" />
             <h3 className="text-2xl font-bold mb-2">No Ministers Found</h3>
-            <p className="text-gray-400 mb-6">
+            <p className="text-slate-600 mb-6">
               Try adjusting your search or filter criteria
             </p>
             <button

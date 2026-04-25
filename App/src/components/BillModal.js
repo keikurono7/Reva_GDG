@@ -1,4 +1,3 @@
-// src/components/BillModal.js
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { X, ThumbsUp, ThumbsDown, Send } from "lucide-react";
@@ -19,11 +18,6 @@ import { bytesToBase64 } from "../utils/bytesToImage";
 
 const db = getFirestore(app);
 
-/**
- * Props:
- *  - item: Firestore doc data object (must include id, votes, image_blob, created_at, author, description, title)
- *  - onClose: function
- */
 export default function BillModal({ item, onClose }) {
   const session =
     typeof window !== "undefined"
@@ -32,14 +26,11 @@ export default function BillModal({ item, onClose }) {
   const username = session?.username || null;
 
   const [score, setScore] = useState(item.votes || 0);
-  const [userVote, setUserVote] = useState(0); // -1 | 0 | 1
+  const [userVote, setUserVote] = useState(0);
   const [loading, setLoading] = useState(false);
-
-  // comments
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
 
-  // load comments live
   useEffect(() => {
     const q = query(
       collection(db, "bills", item.id, "comments"),
@@ -51,7 +42,6 @@ export default function BillModal({ item, onClose }) {
     return () => unsub();
   }, [item.id]);
 
-  // fetch user's vote
   useEffect(() => {
     if (!username) return;
 
@@ -62,14 +52,10 @@ export default function BillModal({ item, onClose }) {
           const vSnap = await tx.get(voteRef);
           setUserVote(vSnap.exists() ? vSnap.data().vote : 0);
         });
-      } catch (err) {
-        // ignore read errors
-      }
+      } catch {}
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [item.id]);
+  }, [item.id, username]);
 
-  // vote transaction (reddit behavior)
   const handleVote = async (value) => {
     if (!username) {
       alert("Please login to vote");
@@ -91,7 +77,7 @@ export default function BillModal({ item, onClose }) {
         const oldVote = vSnap.exists() ? (vSnap.data().vote || 0) : 0;
 
         let newVote = value;
-        if (oldVote === value) newVote = 0; // unvote
+        if (oldVote === value) newVote = 0;
 
         const delta = newVote - oldVote;
         const currentTotal = billSnap.data().votes || 0;
@@ -100,7 +86,6 @@ export default function BillModal({ item, onClose }) {
         tx.set(voteRef, { vote: newVote });
         tx.update(billRef, { votes: newTotal });
 
-        // reflect locally
         setUserVote(newVote);
         setScore(newTotal);
       });
@@ -112,7 +97,6 @@ export default function BillModal({ item, onClose }) {
     }
   };
 
-  // add comment
   const handleComment = async () => {
     if (!newComment.trim()) return;
     if (!username) return alert("Please login to comment");
@@ -134,101 +118,94 @@ export default function BillModal({ item, onClose }) {
 
   return (
     <motion.div
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
       <motion.div
-        className="bg-gray-900 p-6 rounded-2xl max-w-2xl w-full border border-white/10"
+        className="w-full max-w-2xl rounded-3xl border border-white bg-white p-6 text-slate-900"
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
       >
-        {/* header */}
-        <div className="flex justify-between items-start mb-4">
+        <div className="mb-4 flex items-start justify-between">
           <div>
             <h2 className="text-2xl font-bold">{item.title}</h2>
-            <div className="text-sm text-gray-400">By {item.author || "—"}</div>
+            <div className="text-sm text-slate-500">By {item.author || "—"}</div>
           </div>
 
-          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-lg">
-            <X className="w-5 h-5" />
+          <button onClick={onClose} className="rounded-lg p-2 hover:bg-slate-100">
+            <X className="h-5 w-5" />
           </button>
         </div>
 
-        {/* image */}
         {imgSrc && (
           <img
             src={imgSrc}
-            className="w-full h-64 object-cover rounded-xl mb-4"
+            className="mb-4 h-64 w-full rounded-xl object-cover"
             alt="bill"
           />
         )}
 
-        {/* description */}
-        <p className="text-gray-300 mb-4">{item.description}</p>
+        <p className="mb-4 text-slate-600">{item.description}</p>
 
-        {/* voting */}
-        <div className="flex items-center gap-3 mb-4">
+        <div className="mb-4 flex items-center gap-3">
           <button
             onClick={() => handleVote(1)}
             disabled={loading}
-            className={`px-4 py-2 rounded-xl flex items-center gap-2 ${
-              userVote === 1 ? "bg-green-600" : "bg-white/10"
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 ${
+              userVote === 1 ? "bg-emerald-600 text-white" : "border border-slate-200 bg-slate-50 text-slate-700"
             }`}
           >
-            <ThumbsUp className="w-5 h-5" /> Upvote
+            <ThumbsUp className="h-5 w-5" /> Upvote
           </button>
 
           <button
             onClick={() => handleVote(-1)}
             disabled={loading}
-            className={`px-4 py-2 rounded-xl flex items-center gap-2 ${
-              userVote === -1 ? "bg-red-600" : "bg-white/10"
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 ${
+              userVote === -1 ? "bg-rose-600 text-white" : "border border-slate-200 bg-slate-50 text-slate-700"
             }`}
           >
-            <ThumbsDown className="w-5 h-5" /> Downvote
+            <ThumbsDown className="h-5 w-5" /> Downvote
           </button>
 
-          <div className="ml-auto text-yellow-300 font-bold">Score: {score}</div>
+          <div className="ml-auto font-bold text-amber-600">Score: {score}</div>
         </div>
 
-        {/* comments */}
-        <h3 className="text-lg font-bold mb-2">Comments</h3>
+        <h3 className="mb-2 text-lg font-bold">Comments</h3>
 
-        <div className="max-h-60 overflow-y-auto mb-3 space-y-2 p-2 bg-white/5 rounded-xl border border-white/10">
+        <div className="mb-3 max-h-60 space-y-2 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50 p-2">
           {comments.length === 0 && (
-            <div className="text-gray-400 text-center">No comments yet.</div>
+            <div className="text-center text-slate-500">No comments yet.</div>
           )}
           {comments.map((c) => (
-            <div key={c.id} className="p-3 bg-white/10 rounded-xl">
-              <div className="text-yellow-400 text-sm">{c.author}</div>
+            <div key={c.id} className="rounded-xl bg-white p-3">
+              <div className="text-sm text-amber-600">{c.author}</div>
               <div>{c.text}</div>
-              <div className="text-gray-500 text-xs mt-1">
+              <div className="mt-1 text-xs text-slate-400">
                 {c.created_at?.toDate && c.created_at.toDate().toLocaleString()}
               </div>
             </div>
           ))}
         </div>
 
-        {/* comment input */}
         <div className="flex gap-2">
           <input
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Write a comment…"
-            className="flex-1 p-3 bg-white/10 rounded-xl border border-white/10"
+            placeholder="Write a comment..."
+            className="flex-1 rounded-xl border border-slate-200 bg-slate-50 p-3 outline-none focus:border-amber-300"
           />
           <button
             onClick={handleComment}
-            className="px-4 bg-gradient-to-r from-yellow-500 to-red-500 rounded-xl"
+            className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 text-white"
           >
-            <Send className="w-5 h-5" />
+            <Send className="h-5 w-5" />
           </button>
         </div>
 
-        {/* posted at */}
         {item.created_at?.toDate && (
-          <div className="text-xs text-gray-500 mt-4">
+          <div className="mt-4 text-xs text-slate-400">
             Posted on {new Date(item.created_at.toDate()).toLocaleString()}
           </div>
         )}

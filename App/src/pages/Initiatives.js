@@ -40,13 +40,14 @@ export default function Initiatives() {
             <motion.div
               key={item.id}
               whileHover={{ scale: 1.03, y: -4 }}
-              className="p-6 bg-white/10 rounded-2xl border border-white/10 cursor-pointer transition"
+              className="cursor-pointer rounded-3xl border border-white bg-white/92 p-6 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition"
               onClick={() => setSelected(item)}
             >
               {img && (
                 <img
                   src={img}
-                  className="h-40 w-full object-cover rounded-xl mb-4"
+                  alt={item.title}
+                  className="mb-4 h-40 w-full rounded-2xl object-cover"
                 />
               )}
 
@@ -54,19 +55,19 @@ export default function Initiatives() {
                 {item.title}
               </h3>
 
-              <p className="text-gray-300 truncate">
+              <p className="truncate text-slate-600">
                 {item.description}
               </p>
 
-              <div className="text-sm text-gray-400 mt-2">
+              <div className="mt-2 text-sm text-slate-500">
                 Uploaded by: {item.author}
               </div>
 
-              <span className="text-yellow-300 font-bold mt-3 block">
+              <span className="mt-3 block font-bold text-amber-600">
                 Score: {item.votes || 0}
               </span>
 
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="mt-1 text-xs text-slate-400">
                 Click to vote
               </p>
             </motion.div>

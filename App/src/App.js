@@ -6,7 +6,6 @@ import Discussion from './pages/Discussions';
 import DashboardPage from './pages/Dashboard';
 import TrialPage from './pages/TrialPage';
 import AuthPage from './pages/AuthPage'; // Add this
-import PoliticianDashboard from './pages/PoliticianDashboard'; // Add this
 
 const App = () => {
   return (

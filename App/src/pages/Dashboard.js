@@ -20,14 +20,14 @@ export default function DashboardPage() {
       : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-red-950 to-gray-900 text-white p-6">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#fffdf9_0%,#fbf5ec_100%)] p-6 text-slate-900">
 
       {/* ---------- HEADER WITH USER ---------- */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Dashboard</h1>
 
-        <div className="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-xl border border-white/10">
-          <User className="w-5 h-5 text-yellow-400" />
+        <div className="flex items-center gap-3 rounded-2xl border border-white bg-white/90 px-4 py-2 shadow-sm">
+          <User className="w-5 h-5 text-amber-500" />
           <span className="font-semibold">{session?.username || "Guest"}</span>
         </div>
       </div>

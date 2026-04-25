@@ -5,10 +5,7 @@ import {
   collection,
   query,
   orderBy,
-  onSnapshot,
-  updateDoc,
-  doc,
-  increment
+  onSnapshot
 } from "firebase/firestore";
 
 import { app } from "../services/firebase_";
@@ -38,7 +35,7 @@ export default function Bills() {
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {items.length === 0 && (
-          <div className="text-gray-400 col-span-full text-center">
+          <div className="col-span-full text-center text-slate-500">
             No bills uploaded yet.
           </div>
         )}
@@ -50,13 +47,13 @@ export default function Bills() {
             <motion.div
               key={item.id}
               whileHover={{ scale: 1.03, y: -4 }}
-              className="p-6 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/10 cursor-pointer"
+              className="cursor-pointer rounded-3xl border border-white bg-white/92 p-6 shadow-[0_16px_40px_rgba(15,23,42,0.05)] backdrop-blur-lg"
             >
               {img && (
                 <img
                   src={img}
                   alt="bill"
-                  className="w-full h-40 object-cover rounded-xl mb-4 border border-white/10"
+                  className="mb-4 h-40 w-full rounded-2xl border border-slate-100 object-cover"
                   onClick={() => setSelected(item)}
                 />
               )}
@@ -69,26 +66,26 @@ export default function Bills() {
               </h3>
 
               <p
-                className="text-gray-300 mb-2 cursor-pointer"
+                className="mb-2 cursor-pointer text-slate-600"
                 onClick={() => setSelected(item)}
               >
                 {item.description}
               </p>
 
-              <div className="text-sm text-gray-400">
+              <div className="text-sm text-slate-500">
                 Uploaded by: {item.author}
               </div>
 
-              <span className="text-yellow-300 font-bold mt-3 block">
+              <span className="mt-3 block font-bold text-amber-600">
                 Score: {item.votes || 0}
               </span>
 
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="mt-1 text-xs text-slate-400">
                 Click to vote
               </p>
 
               {item.created_at?.toDate && (
-                <div className="text-xs text-gray-500 mt-1">
+                <div className="mt-1 text-xs text-slate-400">
                   {new Date(item.created_at.toDate()).toLocaleString()}
                 </div>
               )}

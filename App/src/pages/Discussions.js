@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   MessageSquare,
@@ -34,8 +34,6 @@ const fadeAnim = {
   exit: { opacity: 0, y: -20 },
 };
 
-/* ------------------- Helpers ------------------- */
-
 async function fileToUint8Array(file) {
   const ab = await file.arrayBuffer();
   return new Uint8Array(ab);
@@ -55,7 +53,9 @@ function bytesToObjectUrl(image_blob) {
   let uint8 = null;
 
   if (typeof image_blob?.toUint8Array === "function") {
-    try { uint8 = image_blob.toUint8Array(); } catch {}
+    try {
+      uint8 = image_blob.toUint8Array();
+    } catch {}
   }
 
   if (!uint8 && image_blob instanceof Uint8Array) uint8 = image_blob;
@@ -73,28 +73,18 @@ function bytesToObjectUrl(image_blob) {
   return URL.createObjectURL(blob);
 }
 
-/* ------------------------------------------------ */
-
 export default function Discussions() {
   const [search, setSearch] = useState("");
   const [topics, setTopics] = useState([]);
   const [messageCounts, setMessageCounts] = useState({});
   const [topicHasMinister, setTopicHasMinister] = useState({});
   const [selected, setSelected] = useState(null);
-
-  // session user
   const [session, setSession] = useState(null);
-
-  // ministers list
   const [ministerList, setMinisterList] = useState([]);
-
-  // messages
   const [messages, setMessages] = useState([]);
   const [newMsg, setNewMsg] = useState("");
   const [msgFile, setMsgFile] = useState(null);
   const [msgPreviewUrl, setMsgPreviewUrl] = useState(null);
-
-  // topic creation
   const [showCreate, setShowCreate] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newDesc, setNewDesc] = useState("");
@@ -110,15 +100,15 @@ export default function Discussions() {
     };
   }, []);
 
-  /* ---------------- Load User ---------------- */
   useEffect(() => {
     const raw = localStorage.getItem("Pratinidhi_user");
-    if (raw) try {
-      setSession(JSON.parse(raw));
-    } catch {}
+    if (raw) {
+      try {
+        setSession(JSON.parse(raw));
+      } catch {}
+    }
   }, []);
 
-  /* ---------------- Load Ministers ---------------- */
   useEffect(() => {
     const loadMinisters = async () => {
       try {
@@ -138,7 +128,6 @@ export default function Discussions() {
     loadMinisters();
   }, []);
 
-  /* ---------------- Load Discussion Topics ---------------- */
   useEffect(() => {
     const q = query(collection(db, "discussionTopics"), orderBy("created_at", "desc"));
 
@@ -162,7 +151,6 @@ export default function Discussions() {
     return () => unsub();
   }, [ministerList]);
 
-  /* ---------------- Load Messages for Selected ---------------- */
   useEffect(() => {
     if (!selected?.id) return setMessages([]);
 
@@ -176,13 +164,14 @@ export default function Discussions() {
     });
   }, [selected]);
 
-  /* ---------------- Image Preview ---------------- */
   useEffect(() => {
     if (topicFile) {
       const url = URL.createObjectURL(topicFile);
       setTopicPreviewUrl(url);
       createdUrlsRef.current.push(url);
-    } else setTopicPreviewUrl(null);
+    } else {
+      setTopicPreviewUrl(null);
+    }
   }, [topicFile]);
 
   useEffect(() => {
@@ -190,10 +179,11 @@ export default function Discussions() {
       const url = URL.createObjectURL(msgFile);
       setMsgPreviewUrl(url);
       createdUrlsRef.current.push(url);
-    } else setMsgPreviewUrl(null);
+    } else {
+      setMsgPreviewUrl(null);
+    }
   }, [msgFile]);
 
-  /* ---------------- List View ---------------- */
   if (!selected) {
     const filtered = topics.filter((t) =>
       t.title?.toLowerCase().includes(search.toLowerCase())
@@ -201,15 +191,15 @@ export default function Discussions() {
 
     return (
       <motion.div {...fadeAnim} key="list">
-        <h2 className="text-3xl font-bold mb-6">Discussions</h2>
+        <h2 className="mb-6 text-3xl font-bold">Discussions</h2>
 
-        <div className="mb-6 relative">
-          <Search className="absolute left-4 top-3 text-gray-400" />
+        <div className="relative mb-6">
+          <Search className="absolute left-4 top-3 text-slate-400" />
           <input
             placeholder="Search discussions..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full p-3 pl-12 bg-white/10 rounded-xl border border-white/10"
+            className="w-full rounded-2xl border border-slate-200 bg-white p-3 pl-12 text-slate-900 shadow-sm outline-none transition focus:border-amber-300"
           />
         </div>
 
@@ -224,59 +214,58 @@ export default function Discussions() {
                 key={topic.id}
                 whileHover={{ scale: 1.02 }}
                 onClick={() => setSelected(topic)}
-                className="p-5 bg-white/10 rounded-xl border border-white/10 cursor-pointer group"
+                className="group cursor-pointer rounded-3xl border border-white bg-white/92 p-5 shadow-[0_14px_36px_rgba(15,23,42,0.05)]"
               >
                 <div className="flex items-start gap-4">
                   {img ? (
                     <img
                       src={img}
-                      className="w-20 h-14 object-cover rounded-md"
+                      alt={topic.title}
+                      className="h-14 w-20 rounded-xl object-cover"
                     />
                   ) : (
-                    <div className="w-20 h-14 bg-white/5 rounded-md flex items-center justify-center">
-                      <ImageIcon className="text-gray-300" />
+                    <div className="flex h-14 w-20 items-center justify-center rounded-xl bg-slate-100">
+                      <ImageIcon className="text-slate-400" />
                     </div>
                   )}
 
                   <div>
                     <div className="flex items-center gap-3">
-                      <MessageSquare className="text-yellow-400" />
-                      <span className="font-semibold text-xl">{topic.title}</span>
+                      <MessageSquare className="text-amber-500" />
+                      <span className="text-xl font-semibold">{topic.title}</span>
                     </div>
 
-                    <p className="text-gray-300 text-sm">{topic.description}</p>
+                    <p className="text-sm text-slate-600">{topic.description}</p>
 
                     {ministerTag && (
-                      <p className="text-yellow-400 text-sm mt-1">
-                        ⭐ Minister participated
+                      <p className="mt-1 text-sm text-amber-600">
+                        Minister participated
                       </p>
                     )}
 
-                    <p className="text-gray-400 text-xs mt-2">
-                      <MessageCircle className="inline w-4 h-4 mr-1 text-blue-400" />
+                    <p className="mt-2 text-xs text-slate-400">
+                      <MessageCircle className="mr-1 inline h-4 w-4 text-amber-500" />
                       {count} comments
                     </p>
                   </div>
 
-                  <ChevronRight className="ml-auto text-gray-400 group-hover:text-yellow-400" />
+                  <ChevronRight className="ml-auto text-slate-400 group-hover:text-amber-500" />
                 </div>
               </motion.div>
             );
           })}
         </div>
 
-        {/* FAB create */}
         <button
           onClick={() => setShowCreate(true)}
-          className="fixed bottom-8 right-8 bg-gradient-to-r from-yellow-500 to-red-500 p-4 rounded-full"
+          className="fixed bottom-8 right-8 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 p-4 shadow-[0_16px_40px_rgba(245,158,11,0.24)]"
         >
-          <Plus className="text-black" />
+          <Plus className="text-white" />
         </button>
 
-        {/* CREATE MODAL */}
         {showCreate && (
           <motion.div className="fixed inset-0 bg-black/60" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <motion.div className="bg-gray-900 max-w-lg w-full p-6 rounded-2xl mx-auto mt-24">
+            <motion.div className="mx-auto mt-24 w-full max-w-lg rounded-3xl border border-white bg-white p-6 text-slate-900">
               <div className="flex justify-between">
                 <h2 className="text-xl font-bold">Create Discussion</h2>
                 <button onClick={() => setShowCreate(false)}>
@@ -285,21 +274,21 @@ export default function Discussions() {
               </div>
 
               <input
-                className="w-full p-3 bg-white/10 rounded-xl mt-4"
+                className="mt-4 w-full rounded-xl border border-slate-200 bg-slate-50 p-3 outline-none focus:border-amber-300"
                 placeholder="Title"
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
               />
 
               <textarea
-                className="w-full p-3 bg-white/10 rounded-xl mt-3"
+                className="mt-3 w-full rounded-xl border border-slate-200 bg-slate-50 p-3 outline-none focus:border-amber-300"
                 rows={3}
                 placeholder="Description"
                 value={newDesc}
                 onChange={(e) => setNewDesc(e.target.value)}
-              ></textarea>
+              />
 
-              <label className="mt-4 flex gap-2 items-center text-sm text-gray-300 cursor-pointer">
+              <label className="mt-4 flex cursor-pointer items-center gap-2 text-sm text-slate-500">
                 <ImageIcon />
                 <span>Upload Topic Image</span>
                 <input
@@ -313,13 +302,14 @@ export default function Discussions() {
               {topicPreviewUrl && (
                 <img
                   src={topicPreviewUrl}
-                  className="w-full h-40 object-cover rounded-xl mt-3 border border-white/10"
+                  alt="Topic preview"
+                  className="mt-3 h-40 w-full rounded-xl border border-slate-200 object-cover"
                 />
               )}
 
-              <div className="flex gap-3 mt-4">
+              <div className="mt-4 flex gap-3">
                 <button
-                  className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-red-500 rounded-xl"
+                  className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-2 text-white"
                   onClick={async () => {
                     if (!newTitle.trim()) return alert("Title required");
 
@@ -346,7 +336,7 @@ export default function Discussions() {
                 </button>
 
                 <button
-                  className="px-4 py-2 bg-white/10 rounded-xl"
+                  className="rounded-xl border border-slate-200 bg-slate-100 px-4 py-2 text-slate-700"
                   onClick={() => setShowCreate(false)}
                 >
                   Cancel
@@ -358,9 +348,7 @@ export default function Discussions() {
       </motion.div>
     );
   }
-  /* ---------------- CHAT VIEW (when a topic is selected) ---------------- */
 
-  // send message with optional image
   const sendMessage = async () => {
     if (!newMsg.trim() && !msgFile) return;
     if (!session?.username) {
@@ -399,23 +387,21 @@ export default function Discussions() {
 
   return (
     <motion.div {...fadeAnim} key="chat-screen" className="min-h-screen">
-      {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="mb-6 flex items-center gap-4">
         <button
-          className="p-2 bg-white/10 rounded-lg hover:bg-white/20"
+          className="rounded-xl border border-slate-200 bg-white p-2 hover:bg-slate-50"
           onClick={() => setSelected(null)}
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="h-5 w-5" />
         </button>
 
         <div>
           <h2 className="text-2xl font-bold">{selected.title}</h2>
-          <p className="text-gray-400 text-sm">{selected.description}</p>
+          <p className="text-sm text-slate-500">{selected.description}</p>
         </div>
       </div>
 
-      {/* Messages */}
-      <div className="h-[60vh] overflow-y-auto space-y-3 p-4 bg-white/5 rounded-xl border border-white/10 mb-4">
+      <div className="mb-4 h-[60vh] space-y-3 overflow-y-auto rounded-3xl border border-white bg-white/90 p-4 shadow-[0_14px_36px_rgba(15,23,42,0.05)]">
         {messages.map((msg) => {
           const isMinister = ministerList.includes(msg.author);
 
@@ -429,36 +415,36 @@ export default function Discussions() {
           return (
             <div
               key={msg.id}
-              className={`p-4 rounded-xl mb-3 transition-all ${
+              className={`mb-3 rounded-xl p-4 transition-all ${
                 isMinister
-                  ? "bg-gradient-to-r from-red-700 to-yellow-600 border border-yellow-400 shadow-xl"
-                  : "bg-white/10 border border-white/10"
+                  ? "border border-amber-200 bg-gradient-to-r from-amber-100 to-orange-100 shadow-sm"
+                  : "border border-slate-200 bg-slate-50"
               }`}
             >
-              <div className="flex items-center gap-2 mb-1">
-                <p className="font-bold text-white">{msg.author}</p>
+              <div className="mb-1 flex items-center gap-2">
+                <p className="font-bold text-slate-900">{msg.author}</p>
 
                 {isMinister && (
-                  <span className="px-2 py-0.5 text-xs font-semibold rounded-lg bg-yellow-400 text-black">
+                  <span className="rounded-lg bg-amber-500 px-2 py-0.5 text-xs font-semibold text-white">
                     Verified Minister
                   </span>
                 )}
               </div>
 
               {msg.text && (
-                <p className="text-gray-50 whitespace-pre-wrap">{msg.text}</p>
+                <p className="whitespace-pre-wrap text-slate-700">{msg.text}</p>
               )}
 
               {msgImgUrl && (
                 <img
                   src={msgImgUrl}
                   alt="attachment"
-                  className="w-40 h-32 object-cover rounded-lg mt-2 border border-white/20"
+                  className="mt-2 h-32 w-40 rounded-lg border border-slate-200 object-cover"
                 />
               )}
 
               {createdAt && (
-                <p className="text-gray-300 text-xs mt-2">
+                <p className="mt-2 text-xs text-slate-400">
                   {createdAt.toLocaleString()}
                 </p>
               )}
@@ -467,19 +453,17 @@ export default function Discussions() {
         })}
       </div>
 
-      {/* Input area */}
       <div className="flex items-end gap-3">
         <div className="flex-1">
           <textarea
             value={newMsg}
             onChange={(e) => setNewMsg(e.target.value)}
             placeholder="Type a message..."
-            className="w-full p-3 bg-white/10 rounded-xl border border-white/10 resize-none"
+            className="w-full resize-none rounded-2xl border border-slate-200 bg-white p-3 text-slate-900 outline-none focus:border-amber-300"
             rows={2}
           />
-          {/* image attach */}
-          <div className="flex items-center gap-2 mt-2">
-            <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+          <div className="mt-2 flex items-center gap-2">
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-500">
               <ImageIcon />
               <span>Attach image</span>
               <input
@@ -495,14 +479,14 @@ export default function Discussions() {
                 <img
                   src={msgPreviewUrl}
                   alt="preview"
-                  className="w-20 h-14 object-cover rounded-md"
+                  className="h-14 w-20 rounded-md object-cover"
                 />
                 <button
                   onClick={() => {
                     setMsgFile(null);
                     setMsgPreviewUrl(null);
                   }}
-                  className="text-sm text-red-400"
+                  className="text-sm text-red-500"
                 >
                   Remove
                 </button>
@@ -514,9 +498,9 @@ export default function Discussions() {
         <div className="flex flex-col gap-2">
           <button
             onClick={sendMessage}
-            className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-red-500 rounded-xl"
+            className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-2 text-white"
           >
-            <Send className="text-black w-5 h-5" />
+            <Send className="h-5 w-5" />
           </button>
         </div>
       </div>

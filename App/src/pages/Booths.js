@@ -258,7 +258,7 @@ function Booths() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-red-950 to-gray-900 text-white p-6">
+    <div className="py-6">
       <div className="container mx-auto max-w-7xl">
         
         {/* Header */}
@@ -279,12 +279,12 @@ function Booths() {
         </motion.div>
 
         {/* Location Detection & Selection Section */}
-        <motion.div
+          <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           className="max-w-4xl mx-auto mb-12"
         >
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/10 p-6">
+          <div className="bg-white/92 rounded-2xl border border-slate-200 p-6 shadow-sm">
             
             {/* Auto-detect Location Button */}
             <div className="mb-6 text-center">
@@ -320,7 +320,7 @@ function Booths() {
               )}
             </div>
 
-            <div className="text-center mb-6 text-gray-400">
+            <div className="text-center mb-6 text-slate-500">
               <span>OR</span>
             </div>
 
@@ -328,13 +328,13 @@ function Booths() {
             <div className="grid md:grid-cols-3 gap-4 mb-6">
               {/* District Dropdown */}
               <div>
-                <label className="block text-sm font-medium mb-2 text-gray-300">
+                <label className="block text-sm font-medium mb-2 text-slate-600">
                   Select District
                 </label>
                 <select
                   value={selectedDistrict}
                   onChange={(e) => handleDistrictChange(e.target.value)}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-all"
+                  className="w-full px-4 py-3 bg-white/90 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-yellow-500 transition-all"
                 >
                   <option value="" className="bg-gray-900">Choose District</option>
                   {Object.keys(BengaluruData).map((district) => (
@@ -347,14 +347,14 @@ function Booths() {
 
               {/* Constituency Dropdown */}
               <div>
-                <label className="block text-sm font-medium mb-2 text-gray-300">
+                <label className="block text-sm font-medium mb-2 text-slate-600">
                   Select Constituency
                 </label>
                 <select
                   value={selectedConstituency}
                   onChange={(e) => handleConstituencyChange(e.target.value)}
                   disabled={!selectedDistrict}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-4 py-3 bg-white/90 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-yellow-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <option value="" className="bg-gray-900">Choose Constituency</option>
                   {selectedDistrict && Object.keys(BengaluruData[selectedDistrict].constituencies).map((constituency) => (
@@ -367,14 +367,14 @@ function Booths() {
 
               {/* Booth Dropdown */}
               <div>
-                <label className="block text-sm font-medium mb-2 text-gray-300">
+                <label className="block text-sm font-medium mb-2 text-slate-600">
                   Select Booth
                 </label>
                 <select
                   value={boothNumber}
                   onChange={(e) => handleBoothSelection(e.target.value)}
                   disabled={availableBooths.length === 0}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-4 py-3 bg-white/90 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-yellow-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <option value="" className="bg-gray-900">Choose Booth</option>
                   {availableBooths.map((booth) => (
@@ -388,7 +388,7 @@ function Booths() {
 
             {/* Manual Booth Number Entry */}
             <div className="border-t border-white/10 pt-6">
-              <p className="text-sm text-gray-400 mb-3 text-center">
+              <p className="text-sm text-slate-500 mb-3 text-center">
                 Or enter booth number directly:
               </p>
               <div className="flex gap-4">
@@ -399,7 +399,7 @@ function Booths() {
                     value={boothNumber}
                     onChange={(e) => setBoothNumber(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                    className="w-full px-6 py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-yellow-500 transition-all"
+                    className="w-full px-6 py-4 bg-white/90 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-yellow-500 transition-all"
                   />
                 </div>
                 <motion.button
@@ -419,7 +419,7 @@ function Booths() {
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="mt-4 text-red-400 text-center"
+                className="mt-4 text-red-500 text-center"
               >
                 {error}
               </motion.p>
@@ -432,11 +432,11 @@ function Booths() {
           {boothData && (
             <motion.div
               {...fadeInUp}
-              className="mb-8 p-6 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/10"
+              className="mb-8 p-6 bg-white/92 rounded-2xl border border-slate-200 shadow-sm"
             >
               <div className="grid md:grid-cols-4 gap-4">
                 <div className="flex items-center gap-3">
-                  <MapPin className="w-6 h-6 text-yellow-400" />
+                    <MapPin className="w-6 h-6 text-amber-600" />
                   <div>
                     <p className="text-sm text-gray-400">Constituency</p>
                     <p className="font-semibold">{boothData.constituency}</p>
@@ -450,14 +450,14 @@ function Booths() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Users className="w-6 h-6 text-yellow-400" />
+                    <Users className="w-6 h-6 text-amber-600" />
                   <div>
                     <p className="text-sm text-gray-400">Total Voters</p>
                     <p className="font-semibold">{boothData.totalVoters}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <MapPin className="w-6 h-6 text-yellow-400" />
+                    <MapPin className="w-6 h-6 text-amber-600" />
                   <div>
                     <p className="text-sm text-gray-400">Location</p>
                     <p className="font-semibold text-sm">{boothData.location}</p>
@@ -489,31 +489,31 @@ function Booths() {
                     transition={{ delay: index * 0.1 }}
                     whileHover={{ scale: 1.03, y: -5 }}
                     onClick={() => setSelectedCandidate(candidate)}
-                    className="p-6 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/10 cursor-pointer hover:border-yellow-500/50 transition-all"
+                    className="p-6 bg-white/92 rounded-2xl border border-slate-200 cursor-pointer hover:border-amber-400/50 transition-all shadow-sm"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="text-4xl">{candidate.symbol}</div>
-                      <div className="text-xs bg-yellow-500/20 text-yellow-300 px-3 py-1 rounded-full">
+                      <div className="text-xs bg-amber-200/60 text-amber-700 px-3 py-1 rounded-full">
                         {candidate.partyShort}
                       </div>
                     </div>
                     
                     <h3 className="text-2xl font-bold mb-2">{candidate.name}</h3>
-                    <p className="text-gray-400 text-sm mb-4">{candidate.party}</p>
+                    <p className="text-slate-600 text-sm mb-4">{candidate.party}</p>
                     
                     <div className="space-y-2 text-sm">
                       <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-gray-400" />
-                        <span className="text-gray-300">Age: {candidate.age}</span>
+                        <Calendar className="w-4 h-4 text-slate-400" />
+                        <span className="text-slate-600">Age: {candidate.age}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Award className="w-4 h-4 text-gray-400" />
-                        <span className="text-gray-300">{candidate.experience}</span>
+                        <Award className="w-4 h-4 text-slate-400" />
+                        <span className="text-slate-600">{candidate.experience}</span>
                       </div>
                     </div>
                     
                     <motion.div
-                      className="mt-4 flex items-center text-yellow-400 font-semibold text-sm"
+                      className="mt-4 flex items-center text-amber-600 font-semibold text-sm"
                       whileHover={{ x: 5 }}
                     >
                       View Full Profile
