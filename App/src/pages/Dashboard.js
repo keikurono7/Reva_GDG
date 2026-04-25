@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import { User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import TopTabs from "./TopTabs";
@@ -31,7 +30,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#fffdf9_0%,#fbf5ec_100%)] p-6 text-slate-900">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#fffdf9_0%,#fbf5ec_100%)] text-slate-900">
 
       {/* ---------- TABS ---------- */}
       <TopTabs
@@ -42,7 +41,7 @@ export default function DashboardPage() {
       />
 
       {/* ---------- CONTENT ---------- */}
-      <div className="container mx-auto mt-6">
+      <div className="container mx-auto mt-6 px-4 sm:px-6">
         <AnimatePresence mode="wait">
           {activeTab === "initiatives" && <Initiatives key="initiatives" />}
           {activeTab === "bills" && <Bills key="bills" />}

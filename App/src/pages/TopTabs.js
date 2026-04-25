@@ -22,8 +22,8 @@ const tabs = [
 
 export default function TopTabs({ activeTab, setActiveTab, username, onLogout }) {
     return (
-        <header className="sticky top-0 z-40 mb-6 border-b border-slate-200 bg-white/95 shadow-[0_2px_10px_rgba(15,23,42,0.05)] backdrop-blur-sm">
-            <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-2 px-4 py-2 sm:px-6 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
+        <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 shadow-[0_2px_10px_rgba(15,23,42,0.05)] backdrop-blur-sm">
+            <div className="flex w-full flex-col gap-2 px-4 py-2 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
                 <div className="flex items-center gap-3">
                     <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-[0_8px_18px_rgba(245,158,11,0.2)]">
                         <Sparkles className="h-5 w-5 text-white" />
@@ -36,8 +36,8 @@ export default function TopTabs({ activeTab, setActiveTab, username, onLogout })
                     </div>
                 </div>
 
-                <nav className="w-full lg:w-[820px] lg:justify-self-center" aria-label="Dashboard sections">
-                    <div className="mx-auto flex w-full items-center justify-start gap-1.5 overflow-x-auto rounded-full border border-slate-200 bg-white px-1.5 py-1.5 lg:justify-center">
+                <nav className="w-full lg:w-[820px] lg:flex-none" aria-label="Dashboard sections">
+                    <div className="flex w-full items-center justify-start gap-1.5 overflow-x-auto rounded-full border border-slate-200 bg-white px-1.5 py-1.5 lg:justify-center">
                         {tabs.map((t) => (
                             <button
                                 key={t.id}
@@ -58,7 +58,7 @@ export default function TopTabs({ activeTab, setActiveTab, username, onLogout })
                     </div>
                 </nav>
 
-                <div className="ml-auto flex items-center gap-2 lg:justify-self-end">
+                <div className="ml-auto flex items-center gap-2 lg:ml-0 lg:flex-none">
                     <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-sm">
                         <User className="h-4 w-4 text-amber-500" />
                         <span className="max-w-36 truncate">{username || "Guest"}</span>
