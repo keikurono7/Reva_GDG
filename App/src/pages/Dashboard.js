@@ -12,6 +12,7 @@ import Ministers from "./Ministers";
 import Chatbot from "./Chatbot";
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("issues");
 
   // read user from localStorage into state so UI updates on logout
