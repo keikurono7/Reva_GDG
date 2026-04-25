@@ -47,7 +47,7 @@ const mockMinisters = [
     profileImage: null,
     schemes: 'Launched Skill Development Program, Digital Governance Initiative',
     electionHistory: 'Elected 4 times consecutively from Bengaluru Central (2008, 2013, 2018, 2023)',
-    futurePlans: 'Focus on making Karnataka a $1 Trillion economy by 2030',
+    futurePlans: 'Focus on making Bengaluru a $1 Trillion economy by 2030',
     initiatives: [
       { title: 'Digital Governance', description: 'E-governance portal for all services' },
       { title: 'Skill Development', description: 'Training 1 million youth by 2025' }
@@ -250,7 +250,7 @@ const mockMinisters = [
     profileImage: null,
     schemes: 'Tech Parks Development, Digital Literacy Program',
     electionHistory: 'Elected 2 times from Tumkur (2018, 2023)',
-    futurePlans: 'Make Karnataka the tech capital of Asia by 2030',
+    futurePlans: 'Make Bengaluru the tech capital of Asia by 2030',
     initiatives: [
       { title: 'Innovation Hubs', description: '50 innovation centers across state' },
       { title: 'Coding for All', description: 'Free coding classes in schools' }

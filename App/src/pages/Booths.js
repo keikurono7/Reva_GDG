@@ -18,7 +18,7 @@ function Booths() {
   const [availableBooths, setAvailableBooths] = useState([]);
 
   // Mock location data - Replace with actual API
-  const karnatakaData = {
+  const BengaluruData = {
     'Bengaluru Urban': {
       constituencies: {
         'Bengaluru South': ['101', '102', '103'],
@@ -187,7 +187,7 @@ function Booths() {
             });
             setSelectedDistrict('Bengaluru Urban');
             setSelectedConstituency('Bengaluru South');
-            setAvailableBooths(karnatakaData['Bengaluru Urban'].constituencies['Bengaluru South']);
+            setAvailableBooths(BengaluruData['Bengaluru Urban'].constituencies['Bengaluru South']);
             setDetectingLocation(false);
           }, 1500);
         },
@@ -214,7 +214,7 @@ function Booths() {
   // Handle constituency selection
   const handleConstituencyChange = (constituency) => {
     setSelectedConstituency(constituency);
-    const booths = karnatakaData[selectedDistrict].constituencies[constituency];
+    const booths = BengaluruData[selectedDistrict].constituencies[constituency];
     setAvailableBooths(booths);
   };
 
@@ -337,7 +337,7 @@ function Booths() {
                   className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-all"
                 >
                   <option value="" className="bg-gray-900">Choose District</option>
-                  {Object.keys(karnatakaData).map((district) => (
+                  {Object.keys(BengaluruData).map((district) => (
                     <option key={district} value={district} className="bg-gray-900">
                       {district}
                     </option>
@@ -357,7 +357,7 @@ function Booths() {
                   className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white focus:outline-none focus:border-yellow-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <option value="" className="bg-gray-900">Choose Constituency</option>
-                  {selectedDistrict && Object.keys(karnatakaData[selectedDistrict].constituencies).map((constituency) => (
+                  {selectedDistrict && Object.keys(BengaluruData[selectedDistrict].constituencies).map((constituency) => (
                     <option key={constituency} value={constituency} className="bg-gray-900">
                       {constituency}
                     </option>

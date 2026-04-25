@@ -27,7 +27,7 @@ const db = getFirestore(app);
 export default function BillModal({ item, onClose }) {
   const session =
     typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("belaku_user") || "null")
+      ? JSON.parse(localStorage.getItem("Pratinidhi_user") || "null")
       : null;
   const username = session?.username || null;
 

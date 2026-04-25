@@ -119,7 +119,7 @@ export default function PoliticianDashboard() {
 
   // Load session
   useEffect(() => {
-    const raw = localStorage.getItem("belaku_user");
+    const raw = localStorage.getItem("Pratinidhi_user");
     if (!raw) return;
     try {
       const user = JSON.parse(raw);
@@ -302,7 +302,7 @@ export default function PoliticianDashboard() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("belaku_user");
+    localStorage.removeItem("Pratinidhi_user");
     window.location.href = "/auth";
   };
 

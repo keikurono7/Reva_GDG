@@ -113,7 +113,7 @@ export default function WelcomePage() {
               <Sparkles className="w-7 h-7 text-white" />
             </div>
             <span className="text-3xl font-bold bg-gradient-to-r from-yellow-400 to-red-500 bg-clip-text text-transparent">
-              Belaku
+              Pratinidhi
             </span>
           </motion.div>
           <motion.button
@@ -142,7 +142,7 @@ export default function WelcomePage() {
                   Governance
                 </span>
                 <br />
-                for Karnataka
+                for Bengaluru
               </h1>
               
               <p className="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
@@ -255,13 +255,13 @@ export default function WelcomePage() {
             className="max-w-4xl mx-auto text-center p-12 bg-gradient-to-br from-yellow-500/10 via-red-500/10 to-yellow-500/10 backdrop-blur-xl rounded-3xl border border-yellow-500/20"
           >
             <h2 className="text-5xl font-bold mb-6">
-              Shape Karnataka's{' '}
+              Shape Bengaluru's{' '}
               <span className="bg-gradient-to-r from-yellow-300 to-red-400 bg-clip-text text-transparent">
                 Future
               </span>
             </h2>
             <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
-              Join thousands of citizens in building a transparent, collaborative governance system for Karnataka
+              Join thousands of citizens in building a transparent, collaborative governance system for Bengaluru
             </p>
             <motion.button
               onClick={() => navigate('/auth')}
@@ -269,7 +269,7 @@ export default function WelcomePage() {
               whileTap={{ scale: 0.95 }}
               className="px-10 py-5 bg-gradient-to-r from-yellow-500 to-red-500 rounded-full font-bold text-xl shadow-2xl shadow-yellow-500/50 hover:shadow-yellow-500/70 transition-all"
             >
-              Join Belaku Today
+              Join Pratinidhi Today
             </motion.button>
           </motion.div>
         </div>
@@ -282,10 +282,10 @@ export default function WelcomePage() {
             <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-red-500 rounded-lg flex items-center justify-center">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-white">Belaku</span>
+            <span className="text-2xl font-bold text-white">Pratinidhi</span>
           </div>
-          <p className="mb-2">Empowering Karnataka through transparent governance</p>
-          <p className="text-sm">© 2025 Government of Karnataka. All rights reserved.</p>
+          <p className="mb-2">Empowering Bengaluru through transparent governance</p>
+          <p className="text-sm">© 2025 Government of Bengaluru. All rights reserved.</p>
         </div>
       </footer>
     </div>

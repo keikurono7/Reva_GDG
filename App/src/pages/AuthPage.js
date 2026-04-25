@@ -113,7 +113,7 @@ export default function AuthPage() {
 
       // Save session to localStorage
       localStorage.setItem(
-        "belaku_user",
+        "Pratinidhi_user",
         JSON.stringify({
           id: docRef.id,
           username,
@@ -164,7 +164,7 @@ export default function AuthPage() {
 
       // Save session
       localStorage.setItem(
-        "belaku_user",
+        "Pratinidhi_user",
         JSON.stringify({
           id: userDoc.id,
           username: data.username,
@@ -197,7 +197,7 @@ export default function AuthPage() {
           <h1 className="text-5xl font-bold text-center mb-12">
             Join{" "}
             <span className="bg-gradient-to-r from-yellow-300 to-red-400 bg-clip-text text-transparent">
-              Belaku
+              Pratinidhi
             </span>
           </h1>
 

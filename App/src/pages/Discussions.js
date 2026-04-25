@@ -112,7 +112,7 @@ export default function Discussions() {
 
   /* ---------------- Load User ---------------- */
   useEffect(() => {
-    const raw = localStorage.getItem("belaku_user");
+    const raw = localStorage.getItem("Pratinidhi_user");
     if (raw) try {
       setSession(JSON.parse(raw));
     } catch {}

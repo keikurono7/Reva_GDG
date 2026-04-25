@@ -16,7 +16,7 @@ export default function DashboardPage() {
   // read user from localStorage
   const session =
     typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("belaku_user") || "null")
+      ? JSON.parse(localStorage.getItem("Pratinidhi_user") || "null")
       : null;
 
   return (
