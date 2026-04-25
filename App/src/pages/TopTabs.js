@@ -1,6 +1,6 @@
 import React from "react";
 import {
-    LayoutDashboard,
+    AlertCircle,
     FileText,
     Building2,
     MessageSquare,
@@ -11,7 +11,7 @@ import {
 
 
 const tabs = [
-    { id: "initiatives", label: "Initiatives", icon: LayoutDashboard },
+    { id: "issues", label: "Issues", icon: AlertCircle },
     { id: "bills", label: "Bills", icon: FileText },
     { id: "booths", label: "Booths", icon: Building2 },
     { id: "discussions", label: "Discussions", icon: MessageSquare },
