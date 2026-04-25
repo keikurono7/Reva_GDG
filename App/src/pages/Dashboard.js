@@ -3,7 +3,7 @@ import { AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 import TopTabs from "./TopTabs";
-import Initiatives from "./Initiatives";
+import Issues from "./Issues";
 import Bills from "./Bills";
 import Booths from "./Booths";
 import Discussions from "./Discussions";
@@ -11,8 +11,8 @@ import Ministers from "./Ministers";
 import Chatbot from "./Chatbot";
 
 export default function DashboardPage() {
-  const [activeTab, setActiveTab] = useState("initiatives");
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("issues");
 
   // read user from localStorage into state so UI updates on logout
   const [session, setSession] = useState(
@@ -43,7 +43,7 @@ export default function DashboardPage() {
       {/* ---------- CONTENT ---------- */}
       <div className="container mx-auto mt-6 px-4 sm:px-6">
         <AnimatePresence mode="wait">
-          {activeTab === "initiatives" && <Initiatives key="initiatives" />}
+          {activeTab === "issues" && <Issues key="issues" />}
           {activeTab === "bills" && <Bills key="bills" />}
           {activeTab === "booths" && <Booths key="booths" />}
           {activeTab === "discussions" && <Discussions key="discussions" />}
