@@ -20,7 +20,7 @@ const tabs = [
 ];
 
 
-export default function TopTabs({ activeTab, setActiveTab, username }) {
+export default function TopTabs({ activeTab, setActiveTab, username, onLogout }) {
     return (
         <header className="sticky top-0 z-40 mb-6 border-b border-slate-200 bg-white/95 shadow-[0_2px_10px_rgba(15,23,42,0.05)] backdrop-blur-sm">
             <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-2 px-4 py-2 sm:px-6 lg:grid-cols-[1fr_auto_1fr] lg:items-center">
@@ -58,13 +58,20 @@ export default function TopTabs({ activeTab, setActiveTab, username }) {
                     </div>
                 </nav>
 
-                <button
-                    type="button"
-                    className="ml-auto flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-colors duration-200 hover:bg-slate-50 lg:justify-self-end"
-                >
-                    <User className="h-4 w-4 text-amber-500" />
-                    <span className="max-w-36 truncate">{username || "Guest"}</span>
-                </button>
+                <div className="ml-auto flex items-center gap-2 lg:justify-self-end">
+                    <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-sm">
+                        <User className="h-4 w-4 text-amber-500" />
+                        <span className="max-w-36 truncate">{username || "Guest"}</span>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={onLogout}
+                        className="rounded-full bg-gradient-to-r from-red-500 to-red-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm transition-opacity duration-200 hover:opacity-90"
+                    >
+                        Logout
+                    </button>
+                </div>
             </div>
         </header>
     );
