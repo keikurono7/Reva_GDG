@@ -5,7 +5,8 @@ import AdminPage from './Admin';
 import Discussion from './pages/Discussions';
 import DashboardPage from './pages/Dashboard';
 import TrialPage from './pages/TrialPage';
-import AuthPage from './pages/AuthPage'; // Add this
+import AuthPage from './pages/AuthPage'; 
+import PoliticianDashboard from './pages/PoliticianDashboard'; 
 
 const App = () => {
   return (
@@ -16,7 +17,7 @@ const App = () => {
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/discuss" element={<Discussion />} />
         <Route path="/dashboard" element={<DashboardPage />} />
-        {/* // <Route path="/politician-dashboard" element={<PoliticianDashboard />} />  */}
+        <Route path="/politician-dashboard" element={<PoliticianDashboard />} />
         <Route path='/trial' element={<TrialPage />} />
       </Routes>
     </Router>
