@@ -2,18 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard,
-  MessageSquare,
-  Search,
-  Vote,
-  BarChart3,
+  MapPinned,
+  MessageCircleMore,
+  ShieldAlert,
+  ClipboardCheck,
+  LineChart,
   Users,
-  Shield,
   ChevronRight,
   Sparkles,
-  TrendingUp,
+  Bot,
   Eye,
-  Heart
+  Globe,
+  Timer
 } from 'lucide-react';
 
 export default function WelcomePage() {
@@ -28,48 +28,48 @@ export default function WelcomePage() {
 
   const features = [
     {
-      icon: LayoutDashboard,
-      title: 'Interactive Dashboard',
-      description: "Explore planned initiatives, bills passed, and ongoing public discussions in real-time",
+      icon: MapPinned,
+      title: 'Geo-Tagged Issue Reporting',
+      description: 'Citizens can report local issues with location context and tag the right representative in minutes.',
       color: 'from-amber-400 to-orange-500'
     },
     {
-      icon: MessageSquare,
-      title: 'Open Discussion Spaces',
-      description: 'Department-wise channels for direct engagement with officials and policy feedback',
+      icon: MessageCircleMore,
+      title: 'Pre-Policy Consultation',
+      description: 'Collect citizen feedback and votes before policies are finalized to reduce conflict and improve trust.',
       color: 'from-orange-400 to-red-400'
     },
     {
-      icon: Search,
-      title: 'Smart Search',
-      description: 'Unified search for politicians and departments with instant access to projects and records',
+      icon: ShieldAlert,
+      title: 'AI Conflict-Risk Alerts',
+      description: 'Gemini analyzes issue sentiment and flags high-tension topics early for proactive intervention.',
       color: 'from-amber-300 to-orange-400'
     },
     {
-      icon: Vote,
-      title: 'Election Mode',
-      description: 'Booth-wise candidate lists, experience, and track records for informed voting',
+      icon: ClipboardCheck,
+      title: 'Transparent Work Profiles',
+      description: 'Track issue resolution rate, engagement history, and public updates from elected representatives.',
       color: 'from-amber-500 to-red-400'
     },
     {
-      icon: BarChart3,
-      title: 'Public Feedback & Polling',
-      description: 'Vote, comment, and suggest improvements on government initiatives',
+      icon: LineChart,
+      title: 'Constituency Insights',
+      description: 'Weekly digests summarize top local concerns so officials can prioritize impact-driven decisions.',
       color: 'from-orange-300 to-amber-500'
     },
     {
-      icon: TrendingUp,
-      title: 'Data Dashboard for Officials',
-      description: 'Analytics on citizen sentiment, engagement, and feedback for better decisions',
+      icon: Bot,
+      title: 'Real-Time Accountability',
+      description: 'Every update is visible as it happens, so citizens see progress and institutions build credibility.',
       color: 'from-amber-600 to-orange-400'
     }
   ];
 
   const stats = [
-    { label: 'Active Citizens', value: '2.5M+', icon: Users },
-    { label: 'Initiatives Tracked', value: '1,200+', icon: Eye },
-    { label: 'Bills Discussed', value: '450+', icon: Shield },
-    { label: 'Engagement Rate', value: '87%', icon: Heart }
+    { label: 'Active Citizens', value: '9M+', icon: Users },
+    { label: 'Constituencies Connected', value: '30+', icon: Globe },
+    { label: 'Issue Escalation Speed', value: 'Real-time', icon: Timer },
+    { label: 'Transparency Visibility', value: 'Live', icon: Eye }
   ];
 
   const handleExplorePlatform = () => {
@@ -134,16 +134,16 @@ export default function WelcomePage() {
               transition={{ duration: 0.8 }}
             >
               <h1 className="mb-6 text-6xl font-bold leading-tight md:text-7xl">
-                Reimagining{' '}
+                Participatory{' '}
                 <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-400 bg-clip-text text-transparent">
                   Governance
                 </span>
                 <br />
-                for Bengaluru
+                for Peaceful Cities
               </h1>
 
               <p className="mx-auto mb-12 max-w-3xl text-xl leading-relaxed text-slate-600 md:text-2xl">
-                A participatory, data-driven system where citizens and government collaborate in real-time to shape the state's progress through transparency and digital engagement.
+                Civic Connect bridges citizens and elected representatives through real-time consultation, transparent issue tracking, and AI-powered conflict prevention.
               </p>
 
               <div className="flex justify-center gap-4">
@@ -153,7 +153,7 @@ export default function WelcomePage() {
                   whileTap={{ scale: 0.95 }}
                   className="flex items-center justify-center space-x-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-8 py-4 text-lg font-bold text-white shadow-[0_18px_45px_rgba(245,158,11,0.24)] transition-all hover:shadow-[0_22px_55px_rgba(245,158,11,0.3)]"
                 >
-                  <span>Explore Platform</span>
+                  <span>Enter Civic Connect</span>
                   <ChevronRight className="h-5 w-5" />
                 </motion.button>
               </div>
@@ -192,13 +192,13 @@ export default function WelcomePage() {
             className="mb-20 text-center"
           >
             <h2 className="mb-6 text-5xl font-bold">
-              Powerful{' '}
+              Platform{' '}
               <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
-                Features
+                Capabilities
               </span>
             </h2>
             <p className="mx-auto max-w-2xl text-xl text-slate-500">
-              AI-powered insights and real-time collaboration tools designed for modern governance
+              Designed for continuous citizen-government engagement, not just election-time visibility
             </p>
           </motion.div>
 
@@ -248,13 +248,13 @@ export default function WelcomePage() {
             className="mx-auto max-w-4xl rounded-[2rem] border border-amber-100 bg-white/88 p-12 text-center shadow-[0_24px_70px_rgba(15,23,42,0.08)] backdrop-blur-xl"
           >
             <h2 className="mb-6 text-5xl font-bold">
-              Shape Bengaluru&apos;s{' '}
+              Build Trust Before{' '}
               <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
-                Future
+                Tensions Escalate
               </span>
             </h2>
             <p className="mx-auto mb-10 max-w-2xl text-xl text-slate-600">
-              Join thousands of citizens in building a transparent, collaborative governance system for Bengaluru
+              Start reporting issues, participating in consultations, and tracking resolution updates in one shared civic system.
             </p>
             <motion.button
               onClick={() => navigate('/auth')}
@@ -262,7 +262,7 @@ export default function WelcomePage() {
               whileTap={{ scale: 0.95 }}
               className="rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-10 py-5 text-xl font-bold text-white shadow-[0_18px_45px_rgba(245,158,11,0.24)] transition-all hover:shadow-[0_22px_55px_rgba(245,158,11,0.3)]"
             >
-              Join Pratinidhi Today
+              Start Participating
             </motion.button>
           </motion.div>
         </div>
@@ -274,10 +274,10 @@ export default function WelcomePage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500">
               <Sparkles className="h-6 w-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-slate-900">Pratinidhi</span>
+            <span className="text-2xl font-bold text-slate-900">Civic Connect</span>
           </div>
-          <p className="mb-2">Empowering Bengaluru through transparent governance</p>
-          <p className="text-sm">&#169; 2025 Government of Bengaluru. All rights reserved.</p>
+          <p className="mb-2">A transparent civic platform for citizens and representatives.</p>
+          <p className="text-sm">&#169; 2026 Civic Connect. All rights reserved.</p>
         </div>
       </footer>
     </div>

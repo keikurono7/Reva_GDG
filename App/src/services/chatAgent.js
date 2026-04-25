@@ -545,6 +545,7 @@ ${JSON.stringify(
 
 Response style:
 - Be concise and practical.
+- Default to 1-2 short sentences unless the user explicitly asks for details.
 - Use bullets only when listing results.
 - If you used tools, summarize what you found instead of dumping raw JSON.
 - If the user asks about "my constituency" and you do not know it, ask for the constituency name.
@@ -552,6 +553,7 @@ Response style:
 - Never include sections like "Plan", "Reasoning", "Thought process", or "The user said".
 - For greetings or casual chat, reply briefly and naturally.
 - Do not proactively describe capabilities unless the user explicitly asks.
+- Do not restate every option unless the user asks for a full comparison.
 `.trim();
 }
 
@@ -565,7 +567,32 @@ function mapHistoryToGeminiContents(history) {
     }));
 }
 
-async function callGemini({ contents, systemInstruction }) {
+async function callGemini({
+  contents,
+  systemInstruction,
+  useTools = true,
+  maxOutputTokens = 180,
+  temperature = 0.3,
+}) {
+  const payload = {
+    systemInstruction: {
+      parts: [{ text: systemInstruction }],
+    },
+    contents,
+    generationConfig: {
+      temperature,
+      maxOutputTokens,
+    },
+  };
+
+  if (useTools) {
+    payload.tools = [
+      {
+        functionDeclarations: FUNCTION_DECLARATIONS,
+      },
+    ];
+  }
+
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
     {
@@ -574,17 +601,7 @@ async function callGemini({ contents, systemInstruction }) {
         "Content-Type": "application/json",
         "x-goog-api-key": GEMINI_API_KEY,
       },
-      body: JSON.stringify({
-        systemInstruction: {
-          parts: [{ text: systemInstruction }],
-        },
-        contents,
-        tools: [
-          {
-            functionDeclarations: FUNCTION_DECLARATIONS,
-          },
-        ],
-      }),
+      body: JSON.stringify(payload),
     }
   );
 
@@ -621,11 +638,183 @@ function sanitizeAssistantReply(text) {
   cleaned = cleaned.replace(/^the user said[\s\S]*?(?=\n\n|$)/i, "").trim();
   cleaned = cleaned.replace(/^plan:\s*[\s\S]*?(?=\n\n|$)/i, "").trim();
   cleaned = cleaned.replace(/^reasoning:\s*[\s\S]*?(?=\n\n|$)/i, "").trim();
+  cleaned = cleaned.replace(/^the user\s+(is asking|asked|wants|said)[\s\S]*?(?=\n\n|$)/i, "").trim();
+  cleaned = cleaned.replace(/^i\s+(should|will|need to|can)\s+[\s\S]*?(?=\n\n|$)/i, "").trim();
+  cleaned = cleaned.replace(/^i\s+don'?t\s+have\s+personal\s+opinions[^.]*\.\s*/i, "").trim();
+  cleaned = cleaned.replace(/^deciding[^.]*depends[^.]*\.\s*/i, "").trim();
+  cleaned = cleaned.replace(/^here are the current active initiatives[^:]*:\s*/i, "").trim();
 
   const planningBullets = /^(?:\d+\.\s.*|[-*]\s.*)(?:\n(?:\d+\.\s.*|[-*]\s.*))+/i;
   cleaned = cleaned.replace(planningBullets, "").trim();
 
+  // Drop leading meta-analysis lines if they still leak through.
+  const lines = cleaned.split("\n");
+  const isMetaLine = (line) =>
+    /^\s*(the user\b|user\b|plan\b|steps?\b|reasoning\b|analysis\b|thinking\b|i should\b|i will\b|i need to\b)/i.test(
+      line
+    );
+  while (lines.length && isMetaLine(lines[0])) {
+    lines.shift();
+  }
+  cleaned = lines.join("\n").trim();
+
+  // Keep replies short and focused by default.
+  if (cleaned.length > 420) {
+    const firstParagraph = cleaned.split(/\n\n/)[0]?.trim() || "";
+    if (firstParagraph) cleaned = firstParagraph;
+  }
+
   return cleaned || "Hi! What can I help you with?";
+}
+
+function isSmallTalk(text) {
+  return /^(hi|hey|heyy|hello|yo|thanks|thank you|ok|okay|cool|nice)\b/i.test(
+    String(text || "").trim()
+  );
+}
+
+function inferCollectionFromQuestion(text) {
+  const t = normalize(text);
+
+  if (/\bbooth\b/.test(t)) return "booth_directory";
+  if (/\bbill|policy|act\b/.test(t)) return "bills";
+  if (/\binitiative|project|scheme\b/.test(t)) return "initiatives";
+  if (/\bpolitician|minister|mla|representative|leader\b/.test(t)) return "users";
+  if (/\bdiscussion|topic|debate|chat\b/.test(t)) return "discussionTopics";
+
+  return null;
+}
+
+function shouldForceContextFetch(text) {
+  const t = normalize(text);
+  if (!t || isSmallTalk(t)) return false;
+
+  // For normal questions, fetch grounding context first.
+  return /\?|\b(what|which|who|why|how|best|better|recommend|should|find|show|tell|give|compare)\b/.test(
+    t
+  );
+}
+
+async function buildFallbackToolExecutions({ text, context }) {
+  const executions = [];
+
+  const userContext = await toolGetUserContext({ context });
+  executions.push({ tool: "get_user_context", args: {}, result: userContext });
+
+  const collectionName = inferCollectionFromQuestion(text);
+  const boothMatch = String(text || "").match(/\bbooth\s*(\d{2,4})\b/i);
+
+  if (boothMatch?.[1]) {
+    const boothResult = await toolGetBoothInfo({ booth_number: boothMatch[1] });
+    executions.push({
+      tool: "get_booth_info",
+      args: { booth_number: boothMatch[1] },
+      result: boothResult,
+    });
+    return executions;
+  }
+
+  if (collectionName && collectionName !== "booth_directory") {
+    const queryArgs = {
+      collection_name: collectionName,
+      search_text: text,
+      max_results: 6,
+      ...(collectionName === "users" ? { only_politicians: true } : {}),
+    };
+
+    const queryResult = await toolQueryRecords(queryArgs);
+    executions.push({ tool: "query_records", args: queryArgs, result: queryResult });
+
+    if (
+      collectionName === "users" &&
+      !queryResult?.totalMatches &&
+      (context?.knownArea?.constituency || context?.knownArea?.district)
+    ) {
+      const areaArgs = {
+        constituency: context.knownArea.constituency || "",
+        district: context.knownArea.district || "",
+        max_results: 6,
+      };
+      const areaResult = await toolFindPoliticiansByArea(areaArgs);
+      executions.push({ tool: "find_politicians_by_area", args: areaArgs, result: areaResult });
+    }
+
+    return executions;
+  }
+
+  // Generic fallback when intent is unclear.
+  const sources = await toolListAvailableDataSources();
+  executions.push({ tool: "list_available_data_sources", args: {}, result: sources });
+
+  return executions;
+}
+
+function compactToolResult(result) {
+  if (!result || typeof result !== "object") return result;
+
+  const compact = { ...toSerializable(result) };
+
+  if (Array.isArray(compact.records)) {
+    compact.records = compact.records.slice(0, 5);
+  }
+
+  if (Array.isArray(compact.sampleRecords)) {
+    compact.sampleRecords = compact.sampleRecords.slice(0, 3);
+  }
+
+  return compact;
+}
+
+function buildSynthesisInstruction() {
+  return `
+You are a civic assistant writing the FINAL user-facing answer.
+
+Rules:
+- Use the provided tool results as your source of truth.
+- Give a direct answer first.
+- Be concise: usually 1-3 short sentences.
+- Only include key facts needed for this exact question.
+- If data is missing, say that briefly and ask one specific follow-up.
+- Do not output internal reasoning, plans, tool names, or JSON.
+- Do not list all options unless the user asked for a full comparison.
+- Do not mention phrases like "the user", "the question", "I should", "plan", or "reasoning".
+- Return only the final answer text, with no headings or labels.
+`.trim();
+}
+
+async function synthesizeFinalAnswer({ userText, draftReply, toolExecutions }) {
+  const synthesisInput = {
+    userQuestion: userText,
+    draftAssistantReply: draftReply || "",
+    toolExecutions: toolExecutions.map((item) => ({
+      tool: item.tool,
+      args: toSerializable(item.args || {}),
+      result: compactToolResult(item.result),
+    })),
+  };
+
+  const data = await callGemini({
+    contents: [
+      {
+        role: "user",
+        parts: [
+          {
+            text: `Create the final answer for the user from this context:\n${JSON.stringify(
+              synthesisInput,
+              null,
+              2
+            )}`,
+          },
+        ],
+      },
+    ],
+    systemInstruction: buildSynthesisInstruction(),
+    useTools: false,
+    maxOutputTokens: 160,
+    temperature: 0.2,
+  });
+
+  return sanitizeAssistantReply(getTextResponse(data));
 }
 
 async function executeTool(functionCall, context) {
@@ -692,6 +881,7 @@ async function runGeminiToolLoop({ text, context, memory, history }) {
 
   let workingMemory = { ...memory };
   const toolTrace = [];
+  const toolExecutions = [];
 
   for (let iteration = 0; iteration < 6; iteration += 1) {
     const data = await callGemini({
@@ -702,7 +892,33 @@ async function runGeminiToolLoop({ text, context, memory, history }) {
     const functionCalls = getFunctionCalls(data);
 
     if (!functionCalls.length) {
-      const replyText = sanitizeAssistantReply(getTextResponse(data));
+      if (!toolExecutions.length && shouldForceContextFetch(text)) {
+        const fallbackExecutions = await buildFallbackToolExecutions({ text, context });
+
+        for (const execution of fallbackExecutions) {
+          toolTrace.push({
+            tool: execution.tool,
+            args: execution.args || {},
+          });
+          toolExecutions.push(execution);
+          workingMemory = updateMemoryFromTool(
+            workingMemory,
+            execution.tool,
+            execution.result,
+            execution.args || {}
+          );
+        }
+      }
+
+      const draftReply = getTextResponse(data);
+      const replyText = toolExecutions.length
+        ? await synthesizeFinalAnswer({
+            userText: text,
+            draftReply,
+            toolExecutions,
+          })
+        : sanitizeAssistantReply(draftReply);
+
       return {
         reply: replyText,
         memory: {
@@ -728,6 +944,11 @@ async function runGeminiToolLoop({ text, context, memory, history }) {
       toolTrace.push({
         tool: functionCall.name,
         args: functionCall.args || {},
+      });
+      toolExecutions.push({
+        tool: functionCall.name,
+        args: functionCall.args || {},
+        result: toolResult,
       });
 
       workingMemory = updateMemoryFromTool(

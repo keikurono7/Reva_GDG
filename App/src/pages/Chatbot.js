@@ -5,6 +5,7 @@ import {
   Send,
   Bot,
   User,
+  Plus,
   Loader2,
   AlertCircle,
   MapPin,
@@ -12,6 +13,8 @@ import {
   Workflow,
 } from "lucide-react";
 import { loadAgentContext, runAgentTurn } from "../services/chatAgent";
+
+const CHAT_STORAGE_KEY = "pratinidhi_chatbot_state_v1";
 
 function createMessage(role, text, meta = {}) {
   return {
@@ -22,26 +25,51 @@ function createMessage(role, text, meta = {}) {
   };
 }
 
-const initialState = {
-  messages: [
-    createMessage(
-      "bot",
-      "Hi! What can I help you with?"
-    ),
-  ],
-  input: "",
-  loading: false,
-  error: "",
-  contextLoading: true,
-  context: null,
-  memory: {
+function createDefaultMemory() {
+  return {
     pendingAction: null,
     lastResults: [],
     lastResultType: null,
     lastArea: null,
     selectedEntity: null,
-  },
-};
+  };
+}
+
+function createDefaultMessages() {
+  return [createMessage("bot", "Hi! What can I help you with?")];
+}
+
+function createInitialState() {
+  const base = {
+    messages: createDefaultMessages(),
+    input: "",
+    loading: false,
+    error: "",
+    contextLoading: true,
+    context: null,
+    memory: createDefaultMemory(),
+  };
+
+  if (typeof window === "undefined") return base;
+
+  try {
+    const parsed = JSON.parse(localStorage.getItem(CHAT_STORAGE_KEY) || "null");
+    if (!parsed) return base;
+
+    return {
+      ...base,
+      messages: Array.isArray(parsed.messages) && parsed.messages.length
+        ? parsed.messages
+        : base.messages,
+      memory: {
+        ...base.memory,
+        ...(parsed.memory || {}),
+      },
+    };
+  } catch {
+    return base;
+  }
+}
 
 function reducer(state, action) {
   switch (action.type) {
@@ -88,6 +116,15 @@ function reducer(state, action) {
         contextLoading: false,
         context: null,
       };
+    case "reset_chat":
+      return {
+        ...state,
+        input: "",
+        loading: false,
+        error: "",
+        messages: createDefaultMessages(),
+        memory: createDefaultMemory(),
+      };
     default:
       return state;
   }
@@ -104,7 +141,7 @@ function AreaPill({ label, value }) {
 }
 
 function Chatbot() {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, undefined, createInitialState);
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -133,6 +170,18 @@ function Chatbot() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [state.messages, state.loading]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    localStorage.setItem(
+      CHAT_STORAGE_KEY,
+      JSON.stringify({
+        messages: state.messages,
+        memory: state.memory,
+      })
+    );
+  }, [state.messages, state.memory]);
 
   const sendMessage = async () => {
     const text = state.input.trim();
@@ -205,6 +254,16 @@ function Chatbot() {
             )}
           </div>
         </div>
+
+        <button
+          type="button"
+          onClick={() => dispatch({ type: "reset_chat" })}
+          className="ml-auto inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+          aria-label="Start new conversation"
+          title="New conversation"
+        >
+          <Plus className="h-5 w-5" />
+        </button>
       </div>
 
       <div className="mb-3 flex-1 space-y-3 overflow-y-auto rounded-2xl border border-slate-200 bg-white/80 p-4 backdrop-blur-xl">
@@ -248,11 +307,7 @@ function Chatbot() {
                   <span style={{ whiteSpace: "pre-wrap" }}>{message.text}</span>
                 )}
 
-                {message.role === "bot" && Array.isArray(message.meta?.toolTrace) && message.meta.toolTrace.length > 0 && (
-                  <div className="mt-3 border-t border-slate-200 pt-2 text-[11px] uppercase tracking-[0.18em] text-slate-500">
-                    Tools: {message.meta.toolTrace.map((item) => item.tool.replaceAll("_", " ")).join(" -> ")}
-                  </div>
-                )}
+                {message.role === "bot" && Array.isArray(message.meta?.toolTrace) && message.meta.toolTrace.length > 0 }
               </div>
             </motion.div>
           ))}
