@@ -13,9 +13,6 @@ import {
   Settings,
   LogOut,
   Plus,
-  Eye,
-  Heart,
-  Share2,
   X,
   Upload,
   Image as ImageIcon,
@@ -66,7 +63,6 @@ export default function PoliticianDashboard() {
   const [selectedItem, setSelectedItem] = useState(null);
 
   // Edit modals
-  const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false); // For the comprehensive edit modal
   const [showItemEdit, setShowItemEdit] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
@@ -110,10 +106,10 @@ export default function PoliticianDashboard() {
 
   // Stats data
   const stats = [
-    { label: 'Total Followers', value: '15.2K', change: '+12%', icon: Users, color: 'from-blue-500 to-cyan-500' },
+    { label: 'Total Followers', value: '15.2K', change: '+12%', icon: Users, color: 'from-amber-400 to-orange-500' },
     { label: 'Initiatives Posted', value: initiatives.length.toString(), change: '+8', icon: Award, color: 'from-yellow-500 to-orange-500' },
-    { label: 'Bills Passed', value: bills.length.toString(), change: '+3', icon: FileText, color: 'from-green-500 to-emerald-500' },
-    { label: 'Engagement Rate', value: '87%', change: '+5%', icon: TrendingUp, color: 'from-purple-500 to-pink-500' }
+    { label: 'Bills Passed', value: bills.length.toString(), change: '+3', icon: FileText, color: 'from-orange-400 to-red-500' },
+    { label: 'Engagement Rate', value: '87%', change: '+5%', icon: TrendingUp, color: 'from-amber-500 to-orange-500' }
   ];
 
 
@@ -463,41 +459,42 @@ export default function PoliticianDashboard() {
   /* ---------------- UI ---------------- */
   if (!session) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+      <div className="min-h-screen flex items-center justify-center bg-[linear-gradient(180deg,#fffdf9_0%,#fbf5ec_100%)] text-slate-900">
         Login required.
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-red-950 to-gray-900 text-white">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#fffdf9_0%,#fbf5ec_100%)] text-slate-900">
       
       {/* Top Navigation */}
-      <div className="border-b border-white/10 backdrop-blur-lg">
+      <div className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 shadow-[0_2px_10px_rgba(15,23,42,0.05)] backdrop-blur-sm">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-red-500 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-[0_8px_18px_rgba(245,158,11,0.2)]">
                 <User className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold">Politician Dashboard</h1>
-                <p className="text-sm text-gray-400">Hello, {session.name || profileData.name}</p>
+                <p className="text-xs font-semibold tracking-wide text-slate-500">Politician Dashboard</p>
+                <h1 className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-2xl font-bold leading-none text-transparent">Pratinidhi</h1>
+                <p className="mt-1 text-sm text-slate-500">Hello, {session.name || profileData.name}</p>
               </div>
             </div>
             
             <div className="flex items-center gap-4">
               <button 
                 onClick={() => setShowEditModal(true)}
-                className="px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition-all flex items-center gap-2"
+                className="px-4 py-2 border border-slate-200 bg-white rounded-full text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-all flex items-center gap-2"
               >
                 <Edit className="w-4 h-4" />
                 Edit Profile
               </button>
-              <button className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+              <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-600">
                 <Settings className="w-5 h-5" />
               </button>
-              <button onClick={handleLogout} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+              <button onClick={handleLogout} className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-600">
                 <LogOut className="w-5 h-5" />
               </button>
             </div>
@@ -508,15 +505,15 @@ export default function PoliticianDashboard() {
       <div className="container mx-auto px-6 py-8">
         
         {/* Tabs */}
-        <div className="flex items-center gap-4 mb-8 overflow-x-auto pb-2">
+        <div className="mb-8 flex items-center gap-1.5 overflow-x-auto rounded-full border border-slate-200 bg-white px-1.5 py-1.5 shadow-sm">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-6 py-3 rounded-xl flex items-center gap-2 font-semibold transition-all whitespace-nowrap ${
+              className={`px-5 py-2.5 rounded-full flex items-center gap-2 text-sm font-semibold transition-all whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'bg-gradient-to-r from-yellow-500 to-red-500 shadow-lg'
-                  : 'bg-white/10 border border-white/10 hover:bg-white/20'
+                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-[0_8px_18px_rgba(245,158,11,0.22)]'
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
               }`}
             >
               <tab.icon className="w-5 h-5" />
@@ -532,23 +529,23 @@ export default function PoliticianDashboard() {
             animate={{ opacity: 1, y: 0 }}
             className="max-w-4xl mx-auto"
           >
-            <div className="p-8 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/10">
+            <div className="p-8 bg-white/92 backdrop-blur-lg rounded-3xl border border-white shadow-[0_16px_40px_rgba(15,23,42,0.05)]">
               <div className="flex items-start gap-6 mb-8">
                 {profileData.profileImage ? (
                   <img 
                     src={profileData.profileImage} 
                     alt="Profile" 
-                    className="w-32 h-32 rounded-full object-cover border-4 border-yellow-500"
+                    className="w-32 h-32 rounded-full object-cover border-4 border-amber-400"
                   />
                 ) : (
-                  <div className="w-32 h-32 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+                  <div className="w-32 h-32 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
                     <User className="w-16 h-16 text-white" />
                   </div>
                 )}
                 
                 <div className="flex-1">
                   <h2 className="text-3xl font-bold mb-2">{profileData.name}</h2>
-                  <div className="space-y-1 text-gray-300">
+                  <div className="space-y-1 text-slate-600">
                     <p><strong>Party:</strong> {profileData.party}</p>
                     <p><strong>Constituency:</strong> {profileData.constituency}</p>
                     {profileData.post && <p><strong>Post:</strong> {profileData.post}</p>}
@@ -563,13 +560,13 @@ export default function PoliticianDashboard() {
                   <h3 className="text-2xl font-bold mb-4">Initiatives</h3>
                   <div className="space-y-4">
                     {profileData.initiatives.map((initiative, idx) => initiative.title && (
-                      <div key={idx} className="p-4 bg-white/5 rounded-xl flex gap-4">
+                      <div key={idx} className="p-4 bg-slate-50 border border-slate-100 rounded-xl flex gap-4">
                         {initiative.image && (
                           <img src={initiative.image} alt={initiative.title} className="w-24 h-24 rounded-lg object-cover" />
                         )}
                         <div>
                           <p className="font-semibold">{idx + 1}. {initiative.title}</p>
-                          <p className="text-sm text-gray-400">{initiative.description}</p>
+                          <p className="text-sm text-slate-500">{initiative.description}</p>
                         </div>
                       </div>
                     ))}
@@ -583,10 +580,10 @@ export default function PoliticianDashboard() {
                   <h3 className="text-2xl font-bold mb-4">Milestones Achieved</h3>
                   <div className="space-y-3">
                     {profileData.milestones.map((milestone, idx) => milestone.title && (
-                      <div key={idx} className="p-4 bg-white/5 rounded-xl">
+                      <div key={idx} className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
                         <p className="font-semibold">{idx + 1}. {milestone.title}</p>
-                        <p className="text-sm text-gray-400">Budget: ₹{milestone.budget}</p>
-                        <p className="text-sm text-gray-300">{milestone.description}</p>
+                        <p className="text-sm text-slate-500">Budget: ₹{milestone.budget}</p>
+                        <p className="text-sm text-slate-600">{milestone.description}</p>
                       </div>
                     ))}
                   </div>
@@ -597,21 +594,21 @@ export default function PoliticianDashboard() {
               {profileData.schemes && (
                 <div className="mb-6">
                   <h3 className="text-xl font-bold mb-2">Schemes</h3>
-                  <p className="text-gray-300">{profileData.schemes}</p>
+                  <p className="text-slate-600">{profileData.schemes}</p>
                 </div>
               )}
 
               {profileData.electionHistory && (
                 <div className="mb-6">
                   <h3 className="text-xl font-bold mb-2">Election History</h3>
-                  <p className="text-gray-300">{profileData.electionHistory}</p>
+                  <p className="text-slate-600">{profileData.electionHistory}</p>
                 </div>
               )}
 
               {profileData.futurePlans && (
                 <div className="mb-6">
                   <h3 className="text-xl font-bold mb-2">Future Plans/Roadmaps</h3>
-                  <p className="text-gray-300">{profileData.futurePlans}</p>
+                  <p className="text-slate-600">{profileData.futurePlans}</p>
                 </div>
               )}
             </div>
@@ -632,15 +629,15 @@ export default function PoliticianDashboard() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.1 }}
-                  className="p-6 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/10"
+                  className="p-6 bg-white/92 backdrop-blur-lg rounded-3xl border border-white shadow-[0_16px_40px_rgba(15,23,42,0.05)]"
                 >
                   <div className={`w-12 h-12 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center mb-4`}>
                     <stat.icon className="w-6 h-6 text-white" />
                   </div>
-                  <p className="text-sm text-gray-400 mb-1">{stat.label}</p>
+                  <p className="text-sm text-slate-500 mb-1">{stat.label}</p>
                   <div className="flex items-end justify-between">
                     <p className="text-3xl font-bold">{stat.value}</p>
-                    <span className="text-sm text-green-400">{stat.change}</span>
+                    <span className="text-sm font-semibold text-emerald-600">{stat.change}</span>
                   </div>
                 </motion.div>
               ))}
@@ -654,12 +651,12 @@ export default function PoliticianDashboard() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => { setUploadType("initiative"); setShowUpload(true); }}
-                  className="p-6 bg-gradient-to-br from-yellow-500/20 to-red-500/20 border border-yellow-500/30 rounded-2xl flex items-center gap-4 hover:border-yellow-500/50 transition-all"
+                  className="p-6 bg-white border border-amber-100 rounded-3xl flex items-center gap-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] hover:border-amber-200 transition-all"
                 >
                   <Plus className="w-8 h-8" />
                   <div className="text-left">
                     <p className="font-semibold">Create New Initiative</p>
-                    <p className="text-sm text-gray-400">Share your initiatives</p>
+                    <p className="text-sm text-slate-500">Share your initiatives</p>
                   </div>
                 </motion.button>
 
@@ -667,24 +664,24 @@ export default function PoliticianDashboard() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => { setUploadType("bill"); setShowUpload(true); }}
-                  className="p-6 bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-2xl flex items-center gap-4 hover:border-blue-500/50 transition-all"
+                  className="p-6 bg-white border border-amber-100 rounded-3xl flex items-center gap-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] hover:border-amber-200 transition-all"
                 >
                   <Award className="w-8 h-8" />
                   <div className="text-left">
                     <p className="font-semibold">Add Bill</p>
-                    <p className="text-sm text-gray-400">Track legislation</p>
+                    <p className="text-sm text-slate-500">Track legislation</p>
                   </div>
                 </motion.button>
 
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="p-6 bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-2xl flex items-center gap-4 hover:border-green-500/50 transition-all"
+                  className="p-6 bg-white border border-amber-100 rounded-3xl flex items-center gap-4 shadow-[0_16px_40px_rgba(15,23,42,0.05)] hover:border-amber-200 transition-all"
                 >
                   <MessageSquare className="w-8 h-8" />
                   <div className="text-left">
                     <p className="font-semibold">View Messages</p>
-                    <p className="text-sm text-gray-400">Respond to constituents</p>
+                    <p className="text-sm text-slate-500">Respond to constituents</p>
                   </div>
                 </motion.button>
               </div>
@@ -694,7 +691,7 @@ export default function PoliticianDashboard() {
             <div>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-2xl font-bold">Recent Posts</h2>
-                <button className="text-yellow-400 hover:text-yellow-300 font-semibold">View All</button>
+                <button className="text-amber-600 hover:text-orange-600 font-semibold">View All</button>
               </div>
               
               <div className="grid md:grid-cols-2 gap-4">
@@ -705,12 +702,12 @@ export default function PoliticianDashboard() {
                       key={post.id}
                       whileHover={{ scale: 1.02 }}
                       onClick={() => setSelectedItem({ ...post, __type: initiatives.find(i => i.id === post.id) ? "initiative" : "bill" })}
-                      className="p-6 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/10 cursor-pointer"
+                      className="p-6 bg-white/92 backdrop-blur-lg rounded-3xl border border-white cursor-pointer shadow-[0_16px_40px_rgba(15,23,42,0.05)]"
                     >
                       {img && <img src={img} className="w-full h-40 object-cover rounded-xl mb-4" alt={post.title} />}
                       <h3 className="text-xl font-bold mb-2">{post.title}</h3>
-                      <p className="text-gray-400 truncate mb-3">{post.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-gray-400">
+                      <p className="text-slate-500 truncate mb-3">{post.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-slate-500">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
                           {post.created_at?.toDate ? new Date(post.created_at.toDate()).toLocaleDateString() : 'Recent'}
@@ -734,7 +731,7 @@ export default function PoliticianDashboard() {
               <h2 className="text-2xl font-bold">My Initiatives ({initiatives.length})</h2>
               <button 
                 onClick={() => { setUploadType("initiative"); setShowUpload(true); }}
-                className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-red-500 rounded-lg hover:shadow-lg transition-all flex items-center gap-2"
+                className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full font-semibold shadow-[0_14px_32px_rgba(245,158,11,0.22)] hover:shadow-[0_20px_40px_rgba(245,158,11,0.3)] transition-all flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
                 New Initiative
@@ -746,22 +743,22 @@ export default function PoliticianDashboard() {
                 <motion.div 
                   key={it.id} 
                   whileHover={{ scale: 1.02 }}
-                  className="p-6 bg-white/10 rounded-xl border border-white/10 cursor-pointer relative"
+                  className="p-6 bg-white/92 rounded-3xl border border-white cursor-pointer relative shadow-[0_16px_40px_rgba(15,23,42,0.05)]"
                 >
                   {renderImgSrc(it) && <img src={renderImgSrc(it)} className="w-full h-40 object-cover rounded-xl mb-4" alt={it.title} />}
                   <h3 className="text-xl font-bold mb-2">{it.title}</h3>
-                  <p className="text-gray-400 line-clamp-2 mb-4">{it.description}</p>
+                  <p className="text-slate-500 line-clamp-2 mb-4">{it.description}</p>
                   
                   <div className="flex gap-2">
                     <button 
                       onClick={(e) => { e.stopPropagation(); setSelectedItem({ ...it, __type: "initiative" }); }} 
-                      className="flex-1 px-3 py-2 bg-white/5 hover:bg-white/10 rounded-lg transition-all"
+                      className="flex-1 px-3 py-2 border border-slate-200 bg-slate-50 hover:bg-slate-100 rounded-lg transition-all text-slate-700"
                     >
                       View
                     </button>
                     <button 
                       onClick={(e) => { e.stopPropagation(); openEditForItem(it, "initiative"); }} 
-                      className="px-3 py-2 bg-white/5 hover:bg-white/10 rounded-lg transition-all flex items-center gap-2"
+                      className="px-3 py-2 border border-slate-200 bg-slate-50 hover:bg-slate-100 rounded-lg transition-all flex items-center gap-2 text-slate-700"
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
@@ -772,9 +769,9 @@ export default function PoliticianDashboard() {
 
             {initiatives.length === 0 && (
               <div className="text-center py-20">
-                <Award className="w-16 h-16 mx-auto mb-4 text-gray-500" />
+                <Award className="w-16 h-16 mx-auto mb-4 text-slate-400" />
                 <h3 className="text-2xl font-bold mb-2">No Initiatives Yet</h3>
-                <p className="text-gray-400 mb-6">Start by creating your first initiative</p>
+                <p className="text-slate-500 mb-6">Start by creating your first initiative</p>
               </div>
             )}
           </motion.div>
@@ -790,7 +787,7 @@ export default function PoliticianDashboard() {
               <h2 className="text-2xl font-bold">My Bills ({bills.length})</h2>
               <button 
                 onClick={() => { setUploadType("bill"); setShowUpload(true); }}
-                className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg hover:shadow-lg transition-all flex items-center gap-2"
+                className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full font-semibold shadow-[0_14px_32px_rgba(245,158,11,0.22)] hover:shadow-[0_20px_40px_rgba(245,158,11,0.3)] transition-all flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
                 New Bill
@@ -802,22 +799,22 @@ export default function PoliticianDashboard() {
                 <motion.div 
                   key={it.id}
                   whileHover={{ scale: 1.02 }}
-                  className="p-6 bg-white/10 rounded-xl border border-white/10 cursor-pointer relative"
+                  className="p-6 bg-white/92 rounded-3xl border border-white cursor-pointer relative shadow-[0_16px_40px_rgba(15,23,42,0.05)]"
                 >
                   {renderImgSrc(it) && <img src={renderImgSrc(it)} className="w-full h-40 object-cover rounded-xl mb-4" alt={it.title} />}
                   <h3 className="text-xl font-bold mb-2">{it.title}</h3>
-                  <p className="text-gray-400 line-clamp-2 mb-4">{it.description}</p>
+                  <p className="text-slate-500 line-clamp-2 mb-4">{it.description}</p>
                   
                   <div className="flex gap-2">
                     <button 
                       onClick={(e) => { e.stopPropagation(); setSelectedItem({ ...it, __type: "bill" }); }} 
-                      className="flex-1 px-3 py-2 bg-white/5 hover:bg-white/10 rounded-lg transition-all"
+                      className="flex-1 px-3 py-2 border border-slate-200 bg-slate-50 hover:bg-slate-100 rounded-lg transition-all text-slate-700"
                     >
                       View
                     </button>
                     <button 
                       onClick={(e) => { e.stopPropagation(); openEditForItem(it, "bill"); }} 
-                      className="px-3 py-2 bg-white/5 hover:bg-white/10 rounded-lg transition-all flex items-center gap-2"
+                      className="px-3 py-2 border border-slate-200 bg-slate-50 hover:bg-slate-100 rounded-lg transition-all flex items-center gap-2 text-slate-700"
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
@@ -828,9 +825,9 @@ export default function PoliticianDashboard() {
 
             {bills.length === 0 && (
               <div className="text-center py-20">
-                <FileText className="w-16 h-16 mx-auto mb-4 text-gray-500" />
+                <FileText className="w-16 h-16 mx-auto mb-4 text-slate-400" />
                 <h3 className="text-2xl font-bold mb-2">No Bills Yet</h3>
-                <p className="text-gray-400 mb-6">Start by creating your first bill</p>
+                <p className="text-slate-500 mb-6">Start by creating your first bill</p>
               </div>
             )}
           </motion.div>
@@ -846,7 +843,7 @@ export default function PoliticianDashboard() {
             className="text-center py-20"
           >
             <h2 className="text-3xl font-bold mb-4">{tabs.find(t => t.id === activeTab)?.label} Content</h2>
-            <p className="text-gray-400">This section is under development</p>
+            <p className="text-slate-500">This section is under development</p>
           </motion.div>
         )}
       </div>
@@ -866,13 +863,13 @@ export default function PoliticianDashboard() {
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-gradient-to-br from-gray-900 to-red-950 rounded-3xl border border-white/20 max-w-4xl w-full max-h-[90vh] overflow-y-auto my-8"
+              className="bg-white rounded-3xl border border-white max-w-4xl w-full max-h-[90vh] overflow-y-auto my-8 text-slate-900 shadow-[0_24px_70px_rgba(15,23,42,0.18)]"
             >
-              <div className="sticky top-0 bg-gradient-to-br from-gray-900 to-red-950 border-b border-white/10 p-6 flex items-center justify-between z-10">
+              <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-slate-200 p-6 flex items-center justify-between z-10">
                 <h2 className="text-3xl font-bold">Edit Profile</h2>
                 <button
                   onClick={() => setShowEditModal(false)}
-                  className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-600"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -888,14 +885,14 @@ export default function PoliticianDashboard() {
                       <img 
                         src={profileData.profileImage} 
                         alt="Profile" 
-                        className="w-32 h-32 rounded-full object-cover border-4 border-yellow-500"
+                        className="w-32 h-32 rounded-full object-cover border-4 border-amber-400"
                       />
                     ) : (
-                      <div className="w-32 h-32 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+                      <div className="w-32 h-32 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
                         <User className="w-16 h-16 text-white" />
                       </div>
                     )}
-                    <label className="cursor-pointer px-6 py-3 bg-white/10 border border-white/20 rounded-xl hover:bg-white/20 transition-all flex items-center gap-2">
+                    <label className="cursor-pointer px-6 py-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all flex items-center gap-2 text-slate-700 shadow-sm">
                       <Upload className="w-5 h-5" />
                       Upload Photo
                       <input
@@ -917,7 +914,7 @@ export default function PoliticianDashboard() {
                       name="name"
                       value={profileData.name}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white focus:outline-none focus:border-yellow-500"
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-amber-400"
                     />
                   </div>
                   <div>
@@ -928,7 +925,7 @@ export default function PoliticianDashboard() {
                       value={profileData.post}
                       onChange={handleInputChange}
                       placeholder="e.g., MLA, Minister"
-                      className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-400"
                     />
                   </div>
                   <div>
@@ -939,7 +936,7 @@ export default function PoliticianDashboard() {
                       value={profileData.booth}
                       onChange={handleInputChange}
                       placeholder="Booth No."
-                      className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-400"
                     />
                   </div>
                   <div>
@@ -949,7 +946,7 @@ export default function PoliticianDashboard() {
                       name="party"
                       value={profileData.party}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white focus:outline-none focus:border-yellow-500"
+                      className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-amber-400"
                     />
                   </div>
                 </div>
@@ -961,7 +958,7 @@ export default function PoliticianDashboard() {
                     <button
                       type="button"
                       onClick={handleAddInitiative}
-                      className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-red-500 rounded-lg hover:shadow-lg transition-all flex items-center gap-2"
+                      className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2"
                     >
                       <Plus className="w-4 h-4" />
                       Add Initiative
@@ -970,7 +967,7 @@ export default function PoliticianDashboard() {
                   
                   <div className="space-y-4">
                     {profileData.initiatives.map((initiative, idx) => (
-                      <div key={initiative.id || idx} className="p-4 bg-white/5 rounded-xl relative">
+                      <div key={initiative.id || idx} className="p-4 bg-slate-50 border border-slate-100 rounded-xl relative">
                         <div className="flex items-center justify-between mb-3">
                           <p className="font-semibold">{idx + 1}.</p>
                           {profileData.initiatives.length > 1 && (
@@ -990,9 +987,9 @@ export default function PoliticianDashboard() {
                             placeholder="Initiative title"
                             value={initiative.title}
                             onChange={(e) => handleInitiativeChange(idx, 'title', e.target.value)}
-                            className="px-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
+                            className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-400"
                           />
-                          <label className="cursor-pointer px-4 py-2 bg-white/10 border border-white/20 rounded-lg hover:bg-white/20 transition-all flex items-center gap-2 justify-center">
+                          <label className="cursor-pointer px-4 py-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-all flex items-center gap-2 justify-center text-slate-700">
                             <ImageIcon className="w-4 h-4" />
                             {initiative.image ? 'Change Image' : 'Upload Image'}
                             <input
@@ -1013,7 +1010,7 @@ export default function PoliticianDashboard() {
                           value={initiative.description}
                           onChange={(e) => handleInitiativeChange(idx, 'description', e.target.value)}
                           rows="2"
-                          className="w-full px-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
+                          className="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-400"
                         />
                       </div>
                     ))}
@@ -1025,7 +1022,7 @@ export default function PoliticianDashboard() {
                   <h3 className="text-xl font-bold mb-4">Milestones Achieved (with Budget)</h3>
                   <div className="space-y-4">
                     {profileData.milestones.map((milestone, idx) => (
-                      <div key={idx} className="p-4 bg-white/5 rounded-xl">
+                      <div key={idx} className="p-4 bg-slate-50 border border-slate-100 rounded-xl">
                         <p className="font-semibold mb-3">{idx + 1}.</p>
                         <div className="grid md:grid-cols-2 gap-4 mb-3">
                           <input
@@ -1033,14 +1030,14 @@ export default function PoliticianDashboard() {
                             placeholder="Milestone title"
                             value={milestone.title}
                             onChange={(e) => handleMilestoneChange(idx, 'title', e.target.value)}
-                            className="px-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
+                            className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-400"
                           />
                           <input
                             type="text"
                             placeholder="Budget (₹)"
                             value={milestone.budget}
                             onChange={(e) => handleMilestoneChange(idx, 'budget', e.target.value)}
-                            className="px-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
+                            className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-400"
                           />
                         </div>
                         <textarea
@@ -1048,7 +1045,7 @@ export default function PoliticianDashboard() {
                           value={milestone.description}
                           onChange={(e) => handleMilestoneChange(idx, 'description', e.target.value)}
                           rows="2"
-                          className="w-full px-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
+                          className="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-400"
                         />
                       </div>
                     ))}
@@ -1064,7 +1061,7 @@ export default function PoliticianDashboard() {
                     onChange={handleInputChange}
                     rows="3"
                     placeholder="List your schemes and programs..."
-                    className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-400"
                   />
                 </div>
 
@@ -1076,7 +1073,7 @@ export default function PoliticianDashboard() {
                     onChange={handleInputChange}
                     rows="4"
                     placeholder="Your election history and results..."
-                    className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-400"
                   />
                 </div>
 
@@ -1088,21 +1085,21 @@ export default function PoliticianDashboard() {
                     onChange={handleInputChange}
                     rows="4"
                     placeholder="Your vision and future plans for the constituency..."
-                    className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-400"
                   />
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-4 justify-end sticky bottom-0 bg-gradient-to-t from-gray-900 to-transparent pt-6">
+                <div className="flex gap-4 justify-end sticky bottom-0 bg-gradient-to-t from-white via-white to-transparent pt-6">
                   <button
                     onClick={() => setShowEditModal(false)}
-                    className="px-6 py-3 bg-white/10 border border-white/20 rounded-xl hover:bg-white/20 transition-all"
+                    className="px-6 py-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all text-slate-700"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleSaveProfile}
-                    className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-red-500 rounded-xl font-semibold hover:shadow-lg hover:shadow-yellow-500/50 transition-all flex items-center gap-2"
+                    className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-amber-500/30 transition-all flex items-center gap-2"
                   >
                     <Save className="w-5 h-5" />
                     Save Profile
@@ -1176,22 +1173,22 @@ export default function PoliticianDashboard() {
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.9 }}
-              className="bg-gray-900 p-6 rounded-2xl max-w-md w-full border border-white/10"
+              className="bg-white p-6 rounded-2xl max-w-md w-full border border-white text-slate-900 shadow-[0_24px_70px_rgba(15,23,42,0.18)]"
             >
               <h3 className="text-xl font-bold mb-4">Confirm Delete</h3>
-              <p className="text-gray-300 mb-6">
+              <p className="text-slate-600 mb-6">
                 Are you sure you want to delete "{deletingItem.title}"? This action cannot be undone.
               </p>
               <div className="flex gap-3">
                 <button
                   onClick={confirmDelete}
-                  className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 rounded-xl font-semibold transition-all"
+                  className="flex-1 px-4 py-2 bg-red-500 text-white hover:bg-red-600 rounded-xl font-semibold transition-all"
                 >
                   Delete
                 </button>
                 <button
                   onClick={() => { setShowDeleteConfirm(false); setDeletingItem(null); }}
-                  className="flex-1 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl transition-all"
+                  className="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 hover:bg-slate-100 rounded-xl transition-all text-slate-700"
                 >
                   Cancel
                 </button>
@@ -1208,30 +1205,30 @@ export default function PoliticianDashboard() {
 function UploadModal({ type, title, desc, file, uploading, message, onClose, onSubmit, onPickFile, onChangeTitle, onChangeDesc }) {
   return (
     <motion.div className="fixed inset-0 bg-black/60 flex items-center justify-center z-40" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <motion.div className="bg-gray-900 p-6 rounded-2xl max-w-lg w-full border border-white/10" initial={{ y: 20 }} animate={{ y: 0 }}>
+      <motion.div className="bg-white p-6 rounded-2xl max-w-lg w-full border border-white text-slate-900 shadow-[0_24px_70px_rgba(15,23,42,0.18)]" initial={{ y: 20 }} animate={{ y: 0 }}>
         <div className="flex justify-between mb-4">
           <h3 className="text-xl font-bold">{type === "initiative" ? "New Initiative" : "New Bill"}</h3>
-          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-lg"><X /></button>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg text-slate-600"><X /></button>
         </div>
 
         <form onSubmit={onSubmit}>
           <label className="text-sm">Title</label>
-          <input className="w-full bg-white/10 rounded-xl p-2 mb-3" value={title} onChange={(e) => onChangeTitle(e.target.value)} />
+          <input className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 mb-3 text-slate-900 focus:outline-none focus:border-amber-400" value={title} onChange={(e) => onChangeTitle(e.target.value)} />
 
           <label className="text-sm">Description</label>
-          <textarea className="w-full bg-white/10 rounded-xl p-2 mb-3" value={desc} rows={4} onChange={(e) => onChangeDesc(e.target.value)} />
+          <textarea className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 mb-3 text-slate-900 focus:outline-none focus:border-amber-400" value={desc} rows={4} onChange={(e) => onChangeDesc(e.target.value)} />
 
           <label className="text-sm">Image (optional)</label>
           <input type="file" accept="image/*" className="mb-3" onChange={(e) => onPickFile(e.target.files?.[0] || null)} />
 
-          {file && <p className="text-sm text-gray-400">{file.name}</p>}
+          {file && <p className="text-sm text-slate-500">{file.name}</p>}
           {message && <p className="text-red-400 text-sm mt-1">{message}</p>}
 
           <div className="flex gap-3 mt-4">
-            <button disabled={uploading} className="px-4 py-2 rounded-xl bg-gradient-to-r from-yellow-500 to-red-500">
+            <button disabled={uploading} className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold">
               {uploading ? "Uploading..." : "Upload"}
             </button>
-            <button type="button" onClick={onClose} className="px-4 py-2 rounded-xl bg-white/10 border border-white/10">Cancel</button>
+            <button type="button" onClick={onClose} className="px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-700">Cancel</button>
           </div>
         </form>
       </motion.div>
@@ -1242,17 +1239,17 @@ function UploadModal({ type, title, desc, file, uploading, message, onClose, onS
 function DetailModal({ item, renderImgSrc, onClose, onEdit, onPromptDelete }) {
   return (
     <motion.div className="fixed inset-0 bg-black/60 flex items-center justify-center z-40" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <motion.div className="bg-gray-900 p-6 rounded-2xl max-w-xl w-full border border-white/10" initial={{ scale: 0.9 }} animate={{ scale: 1 }}>
+      <motion.div className="bg-white p-6 rounded-2xl max-w-xl w-full border border-white text-slate-900 shadow-[0_24px_70px_rgba(15,23,42,0.18)]" initial={{ scale: 0.9 }} animate={{ scale: 1 }}>
         <div className="flex justify-between mb-4">
           <div>
             <h2 className="text-2xl font-bold">{item.title}</h2>
-            <p className="text-gray-400 text-sm">{item.author} • {item.party || ""}</p>
+            <p className="text-slate-500 text-sm">{item.author} • {item.party || ""}</p>
           </div>
 
           <div className="flex items-center gap-2">
-            <button onClick={onEdit} className="p-2 hover:bg-white/5 rounded-lg flex items-center gap-2"><Edit2 /></button>
-            <button onClick={onPromptDelete} className="p-2 hover:bg-white/5 rounded-lg flex items-center gap-2 text-red-400"><Trash2 /></button>
-            <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-lg"><X /></button>
+            <button onClick={onEdit} className="p-2 hover:bg-slate-100 rounded-lg flex items-center gap-2 text-slate-600"><Edit2 /></button>
+            <button onClick={onPromptDelete} className="p-2 hover:bg-red-50 rounded-lg flex items-center gap-2 text-red-500"><Trash2 /></button>
+            <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg text-slate-600"><X /></button>
           </div>
         </div>
 
@@ -1260,9 +1257,9 @@ function DetailModal({ item, renderImgSrc, onClose, onEdit, onPromptDelete }) {
           <img src={renderImgSrc(item)} className="w-full h-64 object-cover rounded-xl mb-4" alt={item.title} />
         )}
 
-        <p className="text-gray-300 mb-3">{item.description}</p>
+        <p className="text-slate-600 mb-3">{item.description}</p>
 
-        <p className="text-gray-500 text-xs">
+        <p className="text-slate-400 text-xs">
           {item.created_at?.toDate ? new Date(item.created_at.toDate()).toLocaleString() : ""}
         </p>
       </motion.div>
@@ -1298,18 +1295,18 @@ function ItemEditModal({ item, onClose, onSave }) {
 
   return (
     <motion.div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <motion.div className="bg-gray-900 p-6 rounded-2xl max-w-lg w-full border border-white/10" initial={{ y: 20 }} animate={{ y: 0 }}>
+      <motion.div className="bg-white p-6 rounded-2xl max-w-lg w-full border border-white text-slate-900 shadow-[0_24px_70px_rgba(15,23,42,0.18)]" initial={{ y: 20 }} animate={{ y: 0 }}>
         <div className="flex justify-between mb-4">
           <h3 className="text-xl font-bold">Edit {item.__type === "bill" ? "Bill" : "Initiative"}</h3>
-          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-lg"><X /></button>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg text-slate-600"><X /></button>
         </div>
 
         <div className="space-y-3">
           <label className="text-sm">Title</label>
-          <input className="w-full bg-white/10 rounded-xl p-2" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <input className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:border-amber-400" value={title} onChange={(e) => setTitle(e.target.value)} />
 
           <label className="text-sm">Description</label>
-          <textarea className="w-full bg-white/10 rounded-xl p-2" rows={4} value={desc} onChange={(e) => setDesc(e.target.value)} />
+          <textarea className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:border-amber-400" rows={4} value={desc} onChange={(e) => setDesc(e.target.value)} />
 
           <label className="text-sm">Replace Image (optional)</label>
           <input type="file" accept="image/*" onChange={(e) => setNewFile(e.target.files?.[0] || null)} />
@@ -1320,8 +1317,8 @@ function ItemEditModal({ item, onClose, onSave }) {
         </div>
 
         <div className="flex gap-3 mt-4">
-          <button onClick={handleSave} className="px-4 py-2 rounded-xl bg-gradient-to-r from-yellow-500 to-red-500">Save</button>
-          <button onClick={onClose} className="px-4 py-2 rounded-xl bg-white/10">Cancel</button>
+          <button onClick={handleSave} className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold">Save</button>
+          <button onClick={onClose} className="px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-700">Cancel</button>
         </div>
       </motion.div>
     </motion.div>
