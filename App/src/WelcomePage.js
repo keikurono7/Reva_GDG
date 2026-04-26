@@ -139,7 +139,7 @@ export default function WelcomePage() {
                   Governance
                 </span>
                 <br />
-                for Peaceful Cities
+                for Bengaluru
               </h1>
 
               <p className="mx-auto mb-8 max-w-3xl text-base leading-relaxed text-slate-600 sm:text-lg md:mb-12 md:text-2xl">
