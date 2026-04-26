@@ -528,17 +528,17 @@ function MinisterDetailModal({ minister, onClose }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6 overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm sm:p-6 overflow-y-auto"
     >
       <motion.div
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.9, y: 20 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-gradient-to-br from-gray-900 to-red-950 rounded-3xl border border-white/20 max-w-4xl w-full max-h-[90vh] overflow-y-auto my-8"
+        className="my-8 max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-3xl border border-white bg-white text-slate-900 shadow-[0_24px_70px_rgba(15,23,42,0.18)]"
       >
         {/* Header */}
-        <div className="sticky top-0 bg-gradient-to-br from-gray-900 to-red-950 border-b border-white/10 p-6 flex items-center justify-between z-10">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white/95 p-6 backdrop-blur-sm">
           <div className="flex items-center gap-4">
             {minister.profileImage ? (
               <img
@@ -552,29 +552,29 @@ function MinisterDetailModal({ minister, onClose }) {
               </div>
             )}
             <div>
-              <h2 className="text-3xl font-bold">{minister.name}</h2>
-              <p className="text-yellow-400">{minister.post}</p>
-              <p className="text-sm text-gray-400">{minister.party}</p>
+              <h2 className="text-3xl font-bold text-slate-900">{minister.name}</h2>
+              <p className="text-amber-600">{minister.post}</p>
+              <p className="text-sm text-slate-500">{minister.party}</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+            className="rounded-lg p-2 transition-colors hover:bg-slate-100"
           >
-            <X className="w-6 h-6" />
+            <X className="w-6 h-6 text-slate-700" />
           </button>
         </div>
 
         {/* Detail Tabs */}
-        <div className="flex gap-2 px-6 pt-4 overflow-x-auto">
+        <div className="flex gap-2 overflow-x-auto px-6 pt-4">
           {detailTabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveDetailTab(tab.id)}
               className={`px-4 py-2 rounded-lg flex items-center gap-2 font-semibold transition-all whitespace-nowrap ${
                 activeDetailTab === tab.id
-                  ? 'bg-yellow-500 text-black'
-                  : 'bg-white/10 hover:bg-white/20'
+                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white'
+                  : 'border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -593,17 +593,17 @@ function MinisterDetailModal({ minister, onClose }) {
               className="space-y-6"
             >
               <div className="grid md:grid-cols-2 gap-4">
-                <div className="p-4 bg-white/5 rounded-xl">
-                  <p className="text-sm text-gray-400 mb-1">Constituency</p>
+                <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
+                  <p className="mb-1 text-sm text-slate-500">Constituency</p>
                   <p className="font-semibold flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-yellow-500" />
+                    <MapPin className="w-4 h-4 text-amber-500" />
                     {minister.constituency}
                   </p>
                 </div>
-                <div className="p-4 bg-white/5 rounded-xl">
-                  <p className="text-sm text-gray-400 mb-1">Age</p>
+                <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
+                  <p className="mb-1 text-sm text-slate-500">Age</p>
                   <p className="font-semibold flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-yellow-500" />
+                    <Calendar className="w-4 h-4 text-amber-500" />
                     {minister.age} years
                   </p>
                 </div>
@@ -612,10 +612,10 @@ function MinisterDetailModal({ minister, onClose }) {
               {minister.education && (
                 <div>
                   <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
-                    <Award className="w-5 h-5 text-yellow-500" />
+                    <Award className="w-5 h-5 text-amber-500" />
                     Education
                   </h3>
-                  <p className="text-gray-300 p-4 bg-white/5 rounded-xl">
+                  <p className="rounded-xl border border-slate-100 bg-slate-50 p-4 text-slate-700">
                     {minister.education}
                   </p>
                 </div>
@@ -624,10 +624,10 @@ function MinisterDetailModal({ minister, onClose }) {
               {minister.electionHistory && (
                 <div>
                   <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-yellow-500" />
+                    <TrendingUp className="w-5 h-5 text-amber-500" />
                     Election History
                   </h3>
-                  <p className="text-gray-300 p-4 bg-white/5 rounded-xl">
+                  <p className="rounded-xl border border-slate-100 bg-slate-50 p-4 text-slate-700">
                     {minister.electionHistory}
                   </p>
                 </div>
@@ -636,10 +636,10 @@ function MinisterDetailModal({ minister, onClose }) {
               {minister.schemes && (
                 <div>
                   <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
-                    <Briefcase className="w-5 h-5 text-yellow-500" />
+                    <Briefcase className="w-5 h-5 text-amber-500" />
                     Key Schemes
                   </h3>
-                  <p className="text-gray-300 p-4 bg-white/5 rounded-xl">
+                  <p className="rounded-xl border border-slate-100 bg-slate-50 p-4 text-slate-700">
                     {minister.schemes}
                   </p>
                 </div>
@@ -648,10 +648,10 @@ function MinisterDetailModal({ minister, onClose }) {
               {minister.futurePlans && (
                 <div>
                   <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
-                    <Target className="w-5 h-5 text-yellow-500" />
+                    <Target className="w-5 h-5 text-amber-500" />
                     Future Plans
                   </h3>
-                  <p className="text-gray-300 p-4 bg-white/5 rounded-xl">
+                  <p className="rounded-xl border border-slate-100 bg-slate-50 p-4 text-slate-700">
                     {minister.futurePlans}
                   </p>
                 </div>
@@ -671,14 +671,14 @@ function MinisterDetailModal({ minister, onClose }) {
               {minister.initiatives && minister.initiatives.length > 0 ? (
                 <div className="space-y-4">
                   {minister.initiatives.map((initiative, idx) => (
-                    <div key={idx} className="p-4 bg-white/5 rounded-xl">
+                    <div key={idx} className="rounded-xl border border-slate-100 bg-slate-50 p-4">
                       <h4 className="font-semibold text-lg mb-2">{initiative.title}</h4>
-                      <p className="text-gray-400">{initiative.description}</p>
+                      <p className="text-slate-600">{initiative.description}</p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-400 text-center py-8">No initiatives listed</p>
+                <p className="text-slate-500 text-center py-8">No initiatives listed</p>
               )}
 
               {minister.milestones && minister.milestones.length > 0 && (
@@ -686,12 +686,12 @@ function MinisterDetailModal({ minister, onClose }) {
                   <h3 className="text-2xl font-bold mb-4 mt-8">Milestones Achieved</h3>
                   <div className="space-y-4">
                     {minister.milestones.map((milestone, idx) => (
-                      <div key={idx} className="p-4 bg-white/5 rounded-xl">
+                      <div key={idx} className="rounded-xl border border-slate-100 bg-slate-50 p-4">
                         <div className="flex items-start justify-between mb-2">
                           <h4 className="font-semibold text-lg">{milestone.title}</h4>
-                          <span className="text-yellow-400 font-bold">₹{milestone.budget}</span>
+                          <span className="font-bold text-amber-600">₹{milestone.budget}</span>
                         </div>
-                        <p className="text-gray-400">{milestone.description}</p>
+                        <p className="text-slate-600">{milestone.description}</p>
                       </div>
                     ))}
                   </div>
@@ -711,16 +711,16 @@ function MinisterDetailModal({ minister, onClose }) {
               {minister.achievements && minister.achievements.length > 0 ? (
                 <div className="space-y-3">
                   {minister.achievements.map((achievement, idx) => (
-                    <div key={idx} className="p-4 bg-white/5 rounded-xl flex items-start gap-3">
-                      <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                        <span className="text-black font-bold">{idx + 1}</span>
+                    <div key={idx} className="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50 p-4">
+                      <div className="mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-amber-500">
+                        <span className="font-bold text-white">{idx + 1}</span>
                       </div>
-                      <p className="text-gray-300 flex-1">{achievement}</p>
+                      <p className="flex-1 text-slate-700">{achievement}</p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-400 text-center py-8">No achievements listed</p>
+                <p className="text-slate-500 text-center py-8">No achievements listed</p>
               )}
             </motion.div>
           )}

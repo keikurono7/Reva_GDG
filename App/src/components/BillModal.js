@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { X, ThumbsUp, ThumbsDown, Send, GitCompare, Save } from "lucide-react";
 import {
@@ -19,6 +19,7 @@ import { bytesToBase64 } from "../utils/bytesToImage";
 import { summarizeBillPublicOpinion } from "../services/chatAgent";
 
 const db = getFirestore(app);
+const INITIAL_CHANGE_ID = "__initial_version_1__";
 
 function formatTimestamp(value) {
   return value?.toDate ? value.toDate().toLocaleString() : "";
@@ -88,7 +89,7 @@ export default function BillModal({ item, onClose }) {
       const nextChanges = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
       setChanges(nextChanges);
       setSelectedChangeId((currentSelected) => {
-        if (nextChanges.length === 0) return null;
+        if (nextChanges.length === 0) return INITIAL_CHANGE_ID;
         if (currentSelected && nextChanges.some((change) => change.id === currentSelected)) {
           return currentSelected;
         }
@@ -265,6 +266,45 @@ export default function BillModal({ item, onClose }) {
 
   const imgSrc = currentBill.image_blob ? bytesToBase64(currentBill.image_blob) : null;
 
+  const revisions = useMemo(() => {
+    const orderedChanges = [...changes].sort((a, b) => {
+      const vA = Number(a?.version || 0);
+      const vB = Number(b?.version || 0);
+      return vB - vA;
+    });
+
+    const hasVersionOne = orderedChanges.some((change) => Number(change?.version || 0) === 1);
+    if (hasVersionOne) return orderedChanges;
+
+    const oldestKnownRevision = [...orderedChanges].sort((a, b) => {
+      const vA = Number(a?.version || Number.MAX_SAFE_INTEGER);
+      const vB = Number(b?.version || Number.MAX_SAFE_INTEGER);
+      return vA - vB;
+    })[0];
+
+    const initialRevision = {
+      id: INITIAL_CHANGE_ID,
+      version: 1,
+      summary: "Initial bill draft published",
+      changedBy: currentBill.author || item.author || "Government",
+      after: {
+        title:
+          oldestKnownRevision?.before?.title ||
+          item.title ||
+          currentBill.title ||
+          "",
+        description:
+          oldestKnownRevision?.before?.description ||
+          item.description ||
+          currentBill.description ||
+          "",
+      },
+      created_at: currentBill.created_at || item.created_at || null,
+    };
+
+    return [...orderedChanges, initialRevision];
+  }, [changes, currentBill, item.author, item.created_at, item.description, item.title]);
+
   return (
     <motion.div
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-2 backdrop-blur-sm sm:items-center sm:p-4"
@@ -396,12 +436,12 @@ export default function BillModal({ item, onClose }) {
               <h3 className="text-lg font-bold">Revisions</h3>
             </div>
 
-            {changes.length === 0 ? (
+            {revisions.length === 0 ? (
               <div className="text-sm text-slate-500">No revisions yet.</div>
             ) : (
               <>
                 <div className="mb-3 max-h-64 space-y-2 overflow-y-auto pr-1">
-                  {changes.map((change) => {
+                  {revisions.map((change) => {
                     const active = change.id === selectedChangeId;
                     return (
                       <div
