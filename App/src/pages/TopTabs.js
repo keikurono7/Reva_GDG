@@ -7,6 +7,7 @@ import {
     Bot,
     Sparkles,
     User,
+    LogOut,
 } from "lucide-react";
 
 
@@ -63,12 +64,8 @@ export default function TopTabs({ activeTab, setActiveTab, username, onLogout })
                         <span className="max-w-36 truncate">{username || "Guest"}</span>
                     </div>
 
-                    <button
-                        type="button"
-                        onClick={onLogout}
-                        className="rounded-full bg-gradient-to-r from-red-500 to-red-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm transition-opacity duration-200 hover:opacity-90"
-                    >
-                        Logout
+                    <button onClick={onLogout} className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-600">
+                        <LogOut className="w-5 h-5" />
                     </button>
                 </div>
             </div>
