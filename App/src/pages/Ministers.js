@@ -10,8 +10,6 @@ import {
   Mail, 
   Calendar,
   TrendingUp,
-  FileText,
-  ExternalLink,
   Building2,
   Users,
   ChevronRight,
@@ -23,9 +21,7 @@ import {
   collection,
   query,
   where,
-  getDocs,
-  doc,
-  getDoc
+  getDocs
 } from 'firebase/firestore';
 import { app } from '../services/firebase_';
 import Booths from './Booths';

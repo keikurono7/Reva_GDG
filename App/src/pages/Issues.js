@@ -21,11 +21,6 @@ export default function Issues() {
   const [selected, setSelected] = useState(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
 
-  const session =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("Pratinidhi_user") || "null")
-      : null;
-
   useEffect(() => {
     const unsub = onSnapshot(
       query(collection(db, "issues"), orderBy("created_at", "desc")),

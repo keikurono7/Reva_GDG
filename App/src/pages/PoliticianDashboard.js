@@ -6,8 +6,6 @@ import {
   BarChart3,
   FileText,
   MessageSquare,
-  TrendingUp,
-  Users,
   Award,
   Calendar,
   Settings,

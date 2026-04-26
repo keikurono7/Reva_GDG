@@ -9,7 +9,6 @@ import {
   Loader2,
   AlertCircle,
   MapPin,
-  BrainCircuit,
   Workflow,
 } from "lucide-react";
 import { loadAgentContext, runAgentTurn } from "../services/chatAgent";
@@ -221,10 +220,6 @@ function Chatbot() {
 
   const knownArea = state.context?.knownArea || {};
   const isWaitingForArea = state.memory?.pendingAction?.type === "needs_area";
-  const llmReady = Boolean(state.context?.llmConfigured);
-  const llmModel = state.context?.llmModel || "gemini-2.5-flash";
-  const llmProvider = state.context?.llmProvider || "gemini";
-  const llmToolCalling = state.context?.llmToolCalling !== false;
 
   return (
     <motion.div
