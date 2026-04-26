@@ -16,6 +16,7 @@ import {
 
 import { app } from "../services/firebase_";
 import { bytesToBase64 } from "../utils/bytesToImage";
+import { summarizeBillPublicOpinion } from "../services/chatAgent";
 
 const db = getFirestore(app);
 
@@ -43,6 +44,10 @@ export default function BillModal({ item, onClose }) {
   const [savingRevision, setSavingRevision] = useState(false);
   const [currentBill, setCurrentBill] = useState(item);
   const [selectedChangeId, setSelectedChangeId] = useState(null);
+  const [opinionSummary, setOpinionSummary] = useState("");
+  const [opinionLoading, setOpinionLoading] = useState(false);
+  const [opinionError, setOpinionError] = useState("");
+  const [hasAutoSummarized, setHasAutoSummarized] = useState(false);
 
   useEffect(() => {
     const billRef = doc(db, "bills", item.id);
@@ -66,6 +71,12 @@ export default function BillModal({ item, onClose }) {
       setComments(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
     });
     return () => unsub();
+  }, [item.id]);
+
+  useEffect(() => {
+    setOpinionSummary("");
+    setOpinionError("");
+    setHasAutoSummarized(false);
   }, [item.id]);
 
   useEffect(() => {
@@ -218,22 +229,56 @@ export default function BillModal({ item, onClose }) {
     }
   };
 
+  const handleGenerateOpinionSummary = async () => {
+    if (opinionLoading) return;
+
+    if (!comments.length) {
+      setOpinionSummary("Not enough comments yet to generate a public opinion review.");
+      setOpinionError("");
+      return;
+    }
+
+    setOpinionLoading(true);
+    setOpinionError("");
+
+    try {
+      const summary = await summarizeBillPublicOpinion({
+        billTitle: currentBill.title,
+        billDescription: currentBill.description,
+        comments,
+      });
+
+      setOpinionSummary(summary);
+    } catch (err) {
+      setOpinionError(err?.message || "Failed to generate AI summary.");
+    } finally {
+      setOpinionLoading(false);
+      setHasAutoSummarized(true);
+    }
+  };
+
+  useEffect(() => {
+    if (hasAutoSummarized) return;
+    if (!comments.length) return;
+    handleGenerateOpinionSummary();
+  }, [comments.length, hasAutoSummarized]);
+
   const imgSrc = currentBill.image_blob ? bytesToBase64(currentBill.image_blob) : null;
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-2 backdrop-blur-sm sm:items-center sm:p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
       <motion.div
-        className="max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-3xl border border-white bg-white p-6 text-slate-900"
+        className="max-h-[94vh] w-full max-w-5xl overflow-y-auto rounded-t-3xl border border-white bg-white p-4 text-slate-900 sm:rounded-3xl sm:p-6"
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
       >
-        <div className="mb-4 flex items-start justify-between">
+        <div className="mb-4 flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-2xl font-bold">{currentBill.title}</h2>
+            <h2 className="text-xl font-bold sm:text-2xl">{currentBill.title}</h2>
             <div className="text-sm text-slate-500">
               By {currentBill.author || "-"} | Version {currentBill.version || 1}
             </div>
@@ -249,14 +294,14 @@ export default function BillModal({ item, onClose }) {
             {imgSrc && (
               <img
                 src={imgSrc}
-                className="mb-4 h-64 w-full rounded-xl object-cover"
+                className="mb-4 h-48 w-full rounded-xl object-cover sm:h-64"
                 alt="bill"
               />
             )}
 
             <p className="mb-4 text-slate-600">{currentBill.description}</p>
 
-            <div className="mb-4 flex items-center gap-3">
+            <div className="mb-4 flex flex-wrap items-center gap-3">
               <button
                 onClick={() => handleVote(1)}
                 disabled={loading}
@@ -281,10 +326,32 @@ export default function BillModal({ item, onClose }) {
                 <ThumbsDown className="h-5 w-5" /> Downvote
               </button>
 
-              <div className="ml-auto font-bold text-amber-600">Score: {score}</div>
+              <div className="w-full font-bold text-amber-600 sm:ml-auto sm:w-auto">Score: {score}</div>
             </div>
 
             <h3 className="mb-2 text-lg font-bold">Comments</h3>
+
+            <div className="mb-3 rounded-2xl border border-amber-200 bg-amber-50 p-3">
+              <div className="mb-2 flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
+                <h4 className="text-sm font-semibold text-amber-800">AI Public Opinion Review</h4>
+                <button
+                  type="button"
+                  onClick={handleGenerateOpinionSummary}
+                  disabled={opinionLoading}
+                  className="rounded-lg bg-amber-600 px-3 py-1 text-xs font-semibold text-white disabled:opacity-60"
+                >
+                  {opinionLoading ? "Summarizing..." : "Refresh Review"}
+                </button>
+              </div>
+
+              {opinionError ? (
+                <div className="text-sm text-rose-600">{opinionError}</div>
+              ) : opinionSummary ? (
+                <p className="whitespace-pre-line text-sm text-slate-700">{opinionSummary}</p>
+              ) : (
+                <div className="text-sm text-slate-500">AI review will appear once comments are loaded.</div>
+              )}
+            </div>
 
             <div className="mb-3 max-h-60 space-y-2 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50 p-2">
               {comments.length === 0 && (
@@ -301,7 +368,7 @@ export default function BillModal({ item, onClose }) {
               ))}
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row">
               <input
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
@@ -310,7 +377,7 @@ export default function BillModal({ item, onClose }) {
               />
               <button
                 onClick={handleComment}
-                className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 text-white"
+                className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 text-white sm:py-0"
               >
                 <Send className="h-5 w-5" />
               </button>

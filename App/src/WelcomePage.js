@@ -77,7 +77,7 @@ export default function WelcomePage() {
   };
 
   return (
-    <div className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.12),transparent_26%),linear-gradient(180deg,#fffdf9_0%,#fff8f1_56%,#f7f1e7_100%)] text-slate-900">
+    <div className="min-h-screen overflow-x-hidden bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.12),transparent_26%),linear-gradient(180deg,#fffdf9_0%,#fff8f1_56%,#f7f1e7_100%)] text-slate-900">
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <motion.div
           animate={{
@@ -101,7 +101,7 @@ export default function WelcomePage() {
       </div>
 
       <div className="relative">
-        <nav className="container mx-auto flex items-center justify-between px-6 py-6">
+        <nav className="container mx-auto flex flex-wrap items-center justify-between gap-3 px-4 py-5 sm:px-6 sm:py-6">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -110,7 +110,7 @@ export default function WelcomePage() {
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-[0_12px_30px_rgba(249,115,22,0.18)]">
               <Sparkles className="h-7 w-7 text-white" />
             </div>
-            <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-3xl font-bold text-transparent">
+            <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-2xl font-bold text-transparent sm:text-3xl">
               Pratinidhi
             </span>
           </motion.div>
@@ -120,20 +120,20 @@ export default function WelcomePage() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleExplorePlatform}
-            className="rounded-full border border-amber-200 bg-white/85 px-6 py-3 font-semibold text-slate-700 shadow-sm transition-all hover:border-amber-300 hover:text-slate-900 hover:shadow-md"
+            className="rounded-full border border-amber-200 bg-white/85 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-amber-300 hover:text-slate-900 hover:shadow-md sm:px-6 sm:py-3 sm:text-base"
           >
             Get Started
           </motion.button>
         </nav>
 
-        <div className="container mx-auto px-6 pb-32 pt-20">
+        <div className="container mx-auto px-4 pb-20 pt-12 sm:px-6 sm:pb-32 sm:pt-20">
           <div className="mx-auto max-w-5xl text-center">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h1 className="mb-6 text-6xl font-bold leading-tight md:text-7xl">
+              <h1 className="mb-5 text-4xl font-bold leading-tight sm:text-5xl md:mb-6 md:text-7xl">
                 Participatory{' '}
                 <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-400 bg-clip-text text-transparent">
                   Governance
@@ -142,7 +142,7 @@ export default function WelcomePage() {
                 for Peaceful Cities
               </h1>
 
-              <p className="mx-auto mb-12 max-w-3xl text-xl leading-relaxed text-slate-600 md:text-2xl">
+              <p className="mx-auto mb-8 max-w-3xl text-base leading-relaxed text-slate-600 sm:text-lg md:mb-12 md:text-2xl">
                 Pratinidhi bridges citizens and elected representatives through real-time consultation, transparent issue tracking, and AI-powered conflict prevention.
               </p>
 
@@ -151,7 +151,7 @@ export default function WelcomePage() {
                   onClick={() => navigate('/auth')}
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  className="flex items-center justify-center space-x-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-8 py-4 text-lg font-bold text-white shadow-[0_18px_45px_rgba(245,158,11,0.24)] transition-all hover:shadow-[0_22px_55px_rgba(245,158,11,0.3)]"
+                  className="flex items-center justify-center space-x-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-3 text-base font-bold text-white shadow-[0_18px_45px_rgba(245,158,11,0.24)] transition-all hover:shadow-[0_22px_55px_rgba(245,158,11,0.3)] sm:px-8 sm:py-4 sm:text-lg"
                 >
                   <span>Enter Pratinidhi</span>
                   <ChevronRight className="h-5 w-5" />
@@ -163,16 +163,16 @@ export default function WelcomePage() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="mt-24 grid grid-cols-2 gap-6 md:grid-cols-4"
+              className="mt-14 grid grid-cols-1 gap-4 sm:mt-24 sm:grid-cols-2 sm:gap-6 md:grid-cols-4"
             >
               {stats.map((stat, idx) => (
                 <motion.div
                   key={idx}
                   whileHover={{ scale: 1.05, y: -5 }}
-                  className="rounded-3xl border border-white/70 bg-white/80 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.06)] backdrop-blur-lg"
+                  className="rounded-3xl border border-white/70 bg-white/80 p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)] backdrop-blur-lg sm:p-6"
                 >
                   <stat.icon className="mx-auto mb-3 h-8 w-8 text-amber-500" />
-                  <div className="mb-1 bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-3xl font-bold text-transparent">
+                  <div className="mb-1 bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-2xl font-bold text-transparent sm:text-3xl">
                     {stat.value}
                   </div>
                   <div className="text-sm text-slate-500">{stat.label}</div>
@@ -183,26 +183,26 @@ export default function WelcomePage() {
         </div>
       </div>
 
-      <div className="relative py-32">
-        <div className="container mx-auto px-6">
+      <div className="relative py-20 sm:py-32">
+        <div className="container mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mb-20 text-center"
+            className="mb-12 text-center sm:mb-20"
           >
-            <h2 className="mb-6 text-5xl font-bold">
+            <h2 className="mb-4 text-3xl font-bold sm:mb-6 sm:text-5xl">
               Platform{' '}
               <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
                 Capabilities
               </span>
             </h2>
-            <p className="mx-auto max-w-2xl text-xl text-slate-500">
+            <p className="mx-auto max-w-2xl text-base text-slate-500 sm:text-xl">
               Designed for continuous citizen-government engagement, not just election-time visibility
             </p>
           </motion.div>
 
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 sm:gap-8">
             {features.map((feature, idx) => (
               <motion.div
                 key={idx}
@@ -211,7 +211,7 @@ export default function WelcomePage() {
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
                 whileHover={{ scale: 1.03, y: -5 }}
-                className="group relative cursor-pointer overflow-hidden rounded-3xl border border-white/80 bg-white/82 p-8 shadow-[0_18px_45px_rgba(15,23,42,0.05)] backdrop-blur-xl transition-all duration-300 hover:border-amber-200 hover:shadow-[0_22px_55px_rgba(15,23,42,0.1)]"
+                className="group relative cursor-pointer overflow-hidden rounded-3xl border border-white/80 bg-white/82 p-6 shadow-[0_18px_45px_rgba(15,23,42,0.05)] backdrop-blur-xl transition-all duration-300 hover:border-amber-200 hover:shadow-[0_22px_55px_rgba(15,23,42,0.1)] sm:p-8"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 transition-opacity duration-300 group-hover:opacity-10`} />
 
@@ -219,7 +219,7 @@ export default function WelcomePage() {
                   <feature.icon className="h-8 w-8 text-white" />
                 </div>
 
-                <h3 className="mb-4 text-2xl font-bold text-slate-900 transition-colors group-hover:text-amber-600">
+                <h3 className="mb-4 text-xl font-bold text-slate-900 transition-colors group-hover:text-amber-600 sm:text-2xl">
                   {feature.title}
                 </h3>
                 <p className="leading-relaxed text-slate-600">
@@ -239,28 +239,28 @@ export default function WelcomePage() {
         </div>
       </div>
 
-      <div className="relative py-32">
-        <div className="container mx-auto px-6">
+      <div className="relative py-20 sm:py-32">
+        <div className="container mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="mx-auto max-w-4xl rounded-[2rem] border border-amber-100 bg-white/88 p-12 text-center shadow-[0_24px_70px_rgba(15,23,42,0.08)] backdrop-blur-xl"
+            className="mx-auto max-w-4xl rounded-[2rem] border border-amber-100 bg-white/88 p-6 text-center shadow-[0_24px_70px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-12"
           >
-            <h2 className="mb-6 text-5xl font-bold">
+            <h2 className="mb-4 text-3xl font-bold sm:mb-6 sm:text-5xl">
               Build Trust Before{' '}
               <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
                 Tensions Escalate
               </span>
             </h2>
-            <p className="mx-auto mb-10 max-w-2xl text-xl text-slate-600">
+            <p className="mx-auto mb-8 max-w-2xl text-base text-slate-600 sm:mb-10 sm:text-xl">
               Start reporting issues, participating in consultations, and tracking resolution updates in one shared civic system.
             </p>
             <motion.button
               onClick={() => navigate('/auth')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-10 py-5 text-xl font-bold text-white shadow-[0_18px_45px_rgba(245,158,11,0.24)] transition-all hover:shadow-[0_22px_55px_rgba(245,158,11,0.3)]"
+              className="rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-7 py-3 text-base font-bold text-white shadow-[0_18px_45px_rgba(245,158,11,0.24)] transition-all hover:shadow-[0_22px_55px_rgba(245,158,11,0.3)] sm:px-10 sm:py-5 sm:text-xl"
             >
               Start Participating
             </motion.button>
@@ -268,8 +268,8 @@ export default function WelcomePage() {
         </div>
       </div>
 
-      <footer className="border-t border-black/5 py-12">
-        <div className="container mx-auto px-6 text-center text-slate-500">
+      <footer className="border-t border-black/5 py-10 sm:py-12">
+        <div className="container mx-auto px-4 text-center text-slate-500 sm:px-6">
           <div className="mb-4 flex items-center justify-center space-x-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500">
               <Sparkles className="h-6 w-6 text-white" />

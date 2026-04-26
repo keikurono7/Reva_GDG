@@ -573,6 +573,7 @@ async function callGemini({
   useTools = true,
   maxOutputTokens = 180,
   temperature = 0.3,
+  timeoutMs = 20000,
 }) {
   const payload = {
     systemInstruction: {
@@ -593,25 +594,39 @@ async function callGemini({
     ];
   }
 
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": GEMINI_API_KEY,
-      },
-      body: JSON.stringify(payload),
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(
+        GEMINI_API_KEY || ""
+      )}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data?.error?.message || "Gemini request failed.");
     }
-  );
 
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data?.error?.message || "Gemini request failed.");
+    return data;
+  } catch (error) {
+    if (error?.name === "AbortError") {
+      throw new Error(`Gemini request timed out after ${timeoutMs}ms.`);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  return data;
 }
 
 function getFunctionCalls(data) {
@@ -1085,6 +1100,154 @@ function buildNoKeyReply(context) {
     "Add `REACT_APP_GEMINI_API_KEY=your_key` to `App/.env` and restart the app.",
     "Set `REACT_APP_GEMINI_MODEL=gemma-4-26b-a4b-it` or whatever Gemini API model string you want to use.",
   ].join("\n");
+}
+
+function normalizeSummaryLines(text) {
+  const cleaned = String(text || "")
+    .replace(/^[\s>*-]+/gm, "")
+    .trim();
+
+  const lines = cleaned
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (lines.length >= 2) {
+    return lines.slice(0, 3).join("\n");
+  }
+
+  const sentences = cleaned
+    .split(/(?<=[.!?])\s+/)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean)
+    .slice(0, 3);
+
+  if (sentences.length >= 2) {
+    return sentences.join("\n");
+  }
+
+  if (cleaned.length > 90) {
+    const midpoint = Math.floor(cleaned.length / 2);
+    const breakAt = cleaned.indexOf(" ", midpoint);
+    if (breakAt > 0) {
+      return `${cleaned.slice(0, breakAt).trim()}\n${cleaned.slice(breakAt + 1).trim()}`;
+    }
+  }
+
+  return cleaned;
+}
+
+function looksLikePromptEcho(text) {
+  const value = String(text || "").trim().toLowerCase();
+  if (!value) return true;
+
+  const hasTemplateMarkers =
+    value.includes("input:") ||
+    value.includes("task:") ||
+    value.includes("constraints:") ||
+    value.includes("output:") ||
+    value.includes("json object") ||
+    value.includes("summarize what people think about the bill");
+
+  return hasTemplateMarkers;
+}
+
+function parseSummaryLinesFromJson(text) {
+  const raw = String(text || "").trim();
+  if (!raw) return null;
+
+  const withoutFences = raw
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/```$/i, "")
+    .trim();
+
+  try {
+    const parsed = JSON.parse(withoutFences);
+    const lines = Array.isArray(parsed?.summary_lines)
+      ? parsed.summary_lines.map((line) => String(line || "").trim()).filter(Boolean)
+      : [];
+
+    if (lines.length >= 2) {
+      return lines.slice(0, 3).join("\n");
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+export async function summarizeBillPublicOpinion({
+  billTitle,
+  billDescription,
+  comments = [],
+}) {
+  if (!GEMINI_API_KEY) {
+    throw new Error("Gemini API key is not configured.");
+  }
+
+  const usableComments = comments
+    .map((comment) => ({
+      author: String(comment?.author || "Anonymous"),
+      text: String(comment?.text || "").trim().slice(0, 300),
+    }))
+    .filter((comment) => comment.text)
+    .slice(0, 80);
+
+  if (!usableComments.length) {
+    return "Not enough comments yet to generate a public opinion review.";
+  }
+
+  const prompt = {
+    bill: {
+      title: String(billTitle || "Untitled bill"),
+      description: String(billDescription || ""),
+    },
+    comments: usableComments,
+  };
+
+  const buildPromptText = () =>
+    `Summarize public opinion about this bill using ONLY the provided comments. Do not add facts or sentiments not present in the comments. Return STRICT JSON in this format only: {"summary_lines":["line 1","line 2","line 3 optional"]}. Keep exactly 2 or 3 short lines.\n\n${JSON.stringify(
+      prompt,
+      null,
+      2
+    )}`;
+
+  const data = await callGemini({
+    contents: [
+      {
+        role: "user",
+        parts: [
+          {
+            text: buildPromptText(),
+          },
+        ],
+      },
+    ],
+    systemInstruction:
+      "You are analyzing citizen feedback on a public bill. Stay neutral, concise, and faithful to the comments only.",
+    useTools: false,
+    maxOutputTokens: 140,
+    temperature: 0.2,
+  });
+
+  let text = getTextResponse(data);
+  let normalized = parseSummaryLinesFromJson(text);
+
+  if (normalized && !looksLikePromptEcho(normalized)) {
+    return normalizeSummaryLines(normalized);
+  }
+
+  if (looksLikePromptEcho(text) || !normalized || looksLikePromptEcho(normalized)) {
+    const compact = String(text || "").replace(/\s+/g, " ").trim();
+    const preview = compact ? compact.slice(0, 220) : "<empty response>";
+    throw new Error(
+      `Gemini returned invalid summary format. Expected JSON with summary_lines. Response preview: ${preview}`
+    );
+  }
+
+  return normalizeSummaryLines(normalized);
 }
 
 export async function loadAgentContext() {

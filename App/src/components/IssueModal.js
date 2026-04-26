@@ -84,18 +84,18 @@ export default function IssueModal({ item, onClose }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-2 sm:items-center sm:p-4"
     >
       <motion.div
         initial={{ scale: 0.95, y: 20 }}
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.95, y: 20 }}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-2xl max-h-[90vh] rounded-3xl bg-white shadow-2xl overflow-y-auto"
+        className="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl"
       >
         {/* Header */}
-        <div className="sticky top-0 flex items-center justify-between border-b border-slate-200 bg-white p-6 z-10">
-          <h3 className="text-2xl font-bold">{item.title}</h3>
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white p-4 sm:p-6">
+          <h3 className="pr-2 text-xl font-bold sm:text-2xl">{item.title}</h3>
           <button
             onClick={onClose}
             className="rounded-full p-2 hover:bg-slate-100 transition"
@@ -105,13 +105,13 @@ export default function IssueModal({ item, onClose }) {
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-6">
+        <div className="space-y-5 p-4 sm:space-y-6 sm:p-6">
           {/* Image */}
           {img && (
             <img
               src={img}
               alt={item.title}
-              className="w-full h-80 object-cover rounded-2xl"
+              className="h-56 w-full rounded-2xl object-cover sm:h-80"
               onError={(e) => {
                 console.error("Image failed to load in modal");
                 e.target.style.display = "none";
@@ -126,7 +126,7 @@ export default function IssueModal({ item, onClose }) {
           </div>
 
           {/* Issue Metadata */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="flex items-start gap-3 p-4 bg-amber-50 rounded-2xl">
               <User className="w-5 h-5 text-amber-600 mt-1 flex-shrink-0" />
               <div>
@@ -151,7 +151,7 @@ export default function IssueModal({ item, onClose }) {
               </div>
             </div>
 
-            <div className="col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <div className="col-span-1 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:col-span-2">
               <p className="text-xs text-slate-500 font-semibold">ASSOCIATED REPRESENTATIVES</p>
               <div className="mt-2 grid grid-cols-1 gap-2 text-sm text-slate-700 md:grid-cols-2">
                 <p><strong>MLA:</strong> {mlaLabel}</p>
@@ -170,10 +170,9 @@ export default function IssueModal({ item, onClose }) {
 
               {mapUrl ? (
                 <iframe
-                  width="100%"
-                  height="300"
+                  className="h-56 w-full rounded-2xl sm:h-72"
                   frameBorder="0"
-                  style={{ border: 0, borderRadius: "1rem" }}
+                  style={{ border: 0 }}
                   src={mapUrl}
                   allowFullScreen=""
                   loading="lazy"
@@ -198,7 +197,7 @@ export default function IssueModal({ item, onClose }) {
             <h4 className="font-semibold text-lg mb-4">Comments</h4>
 
             {/* Comment Input */}
-            <div className="mb-4 flex gap-3">
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row">
               <input
                 type="text"
                 value={newComment}
@@ -210,7 +209,7 @@ export default function IssueModal({ item, onClose }) {
               <button
                 onClick={handleComment}
                 disabled={loading || !newComment.trim()}
-                className="rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-3 font-semibold text-white hover:shadow-lg transition disabled:opacity-50"
+                className="w-full rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-3 font-semibold text-white transition hover:shadow-lg disabled:opacity-50 sm:w-auto"
               >
                 Post
               </button>

@@ -40,7 +40,7 @@ export default function DashboardPage() {
       />
 
       {/* ---------- CONTENT ---------- */}
-      <div className="container mx-auto mt-6 px-4 sm:px-6">
+      <div className="container mx-auto mt-4 px-3 sm:mt-6 sm:px-6">
         <AnimatePresence mode="wait">
           {activeTab === "issues" && <Issues key="issues" />}
           {activeTab === "bills" && <Bills key="bills" />}

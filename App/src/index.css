@@ -11,6 +11,8 @@ html {
   background:
     radial-gradient(circle at top, rgba(250, 204, 21, 0.14), transparent 28%),
     linear-gradient(180deg, #fffdf8 0%, #fff9f2 52%, #f8f4ee 100%);
+  width: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -20,6 +22,7 @@ body {
   background: transparent;
   color: #1f2937;
   overflow-y: scroll;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -30,6 +33,24 @@ body {
 
 #root {
   min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+@media (max-width: 640px) {
+  input,
+  textarea,
+  select,
+  button {
+    font-size: 16px;
+  }
 }
 
 code {

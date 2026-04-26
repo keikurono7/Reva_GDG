@@ -113,18 +113,18 @@ export default function InitiativeModal({ item, onClose }) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-2 backdrop-blur-sm sm:items-center sm:p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
       <motion.div
-        className="w-full max-w-2xl rounded-3xl border border-white bg-white p-6 text-slate-900"
+        className="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-t-3xl border border-white bg-white p-4 text-slate-900 sm:rounded-3xl sm:p-6"
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
       >
         <div className="mb-4 flex justify-between">
           <div>
-            <h2 className="text-2xl font-bold">{item.title}</h2>
+            <h2 className="text-xl font-bold sm:text-2xl">{item.title}</h2>
             <p className="text-sm text-slate-500">By {item.author}</p>
           </div>
 
@@ -133,11 +133,11 @@ export default function InitiativeModal({ item, onClose }) {
           </button>
         </div>
 
-        {img && <img src={img} alt={item.title} className="mb-4 h-64 w-full rounded-xl object-cover" />}
+        {img && <img src={img} alt={item.title} className="mb-4 h-48 w-full rounded-xl object-cover sm:h-64" />}
 
         <p className="mb-4 text-slate-600">{item.description}</p>
 
-        <div className="mb-4 flex items-center gap-3">
+        <div className="mb-4 flex flex-wrap items-center gap-3">
           <button
             disabled={loading}
             onClick={() => handleVote(1)}
@@ -158,7 +158,7 @@ export default function InitiativeModal({ item, onClose }) {
             <ThumbsDown /> Downvote
           </button>
 
-          <div className="ml-auto font-bold text-amber-600">Score: {score}</div>
+          <div className="w-full font-bold text-amber-600 sm:ml-auto sm:w-auto">Score: {score}</div>
         </div>
 
         <h3 className="mb-2 text-lg font-bold">Comments</h3>
@@ -179,7 +179,7 @@ export default function InitiativeModal({ item, onClose }) {
           )}
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <input
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
@@ -188,7 +188,7 @@ export default function InitiativeModal({ item, onClose }) {
           />
           <button
             onClick={handleComment}
-            className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 text-white"
+            className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 text-white sm:py-0"
           >
             <Send className="h-5 w-5" />
           </button>
