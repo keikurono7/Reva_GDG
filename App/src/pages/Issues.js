@@ -73,6 +73,13 @@ export default function Issues() {
               console.error("Error converting image for item:", item.id, err);
             }
 
+            const placeLabel =
+              item.politician?.constituency ||
+              item.location?.address ||
+              "Place not specified";
+            const mlaLabel = item.politician?.mla || "MLA not assigned";
+            const mpLabel = item.politician?.mp || "MP not assigned";
+
             return (
               <motion.div
                 key={item.id}
@@ -105,7 +112,12 @@ export default function Issues() {
                 </div>
 
                 <div className="mt-2 text-xs text-slate-400">
-                  📍 {item.location?.address || "Location not specified"}
+                  📍 {placeLabel}
+                </div>
+
+                <div className="mt-2 rounded-xl border border-slate-200 bg-slate-50 p-2 text-xs text-slate-600">
+                  <p><strong>MLA:</strong> {mlaLabel}</p>
+                  <p><strong>MP:</strong> {mpLabel}</p>
                 </div>
 
                 <span className="mt-3 block font-bold text-amber-600">

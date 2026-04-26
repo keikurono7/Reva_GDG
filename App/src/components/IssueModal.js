@@ -28,6 +28,13 @@ export default function IssueModal({ item, onClose }) {
   const [newComment, setNewComment] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const placeLabel =
+    item.politician?.constituency ||
+    item.location?.address ||
+    "Place not specified";
+  const mlaLabel = item.politician?.mla || "MLA not assigned";
+  const mpLabel = item.politician?.mp || "MP not assigned";
+
   useEffect(() => {
     const q = query(
       collection(db, "issues", item.id, "comments"),
@@ -133,6 +140,22 @@ export default function IssueModal({ item, onClose }) {
               <div>
                 <p className="text-xs text-slate-500 font-semibold">STATUS</p>
                 <p className="text-slate-900 font-semibold">{item.status || "Open"}</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-4 bg-emerald-50 rounded-2xl">
+              <MapPin className="w-5 h-5 text-emerald-600 mt-1 flex-shrink-0" />
+              <div>
+                <p className="text-xs text-slate-500 font-semibold">PLACE</p>
+                <p className="text-slate-900 font-semibold">{placeLabel}</p>
+              </div>
+            </div>
+
+            <div className="col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-xs text-slate-500 font-semibold">ASSOCIATED REPRESENTATIVES</p>
+              <div className="mt-2 grid grid-cols-1 gap-2 text-sm text-slate-700 md:grid-cols-2">
+                <p><strong>MLA:</strong> {mlaLabel}</p>
+                <p><strong>MP:</strong> {mpLabel}</p>
               </div>
             </div>
           </div>
