@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { X, ThumbsUp, ThumbsDown, Send, GitCompare, Save } from "lucide-react";
 import {
@@ -230,7 +230,7 @@ export default function BillModal({ item, onClose }) {
     }
   };
 
-  const handleGenerateOpinionSummary = async () => {
+  const handleGenerateOpinionSummary = useCallback(async () => {
     if (opinionLoading) return;
 
     if (!comments.length) {
@@ -256,13 +256,13 @@ export default function BillModal({ item, onClose }) {
       setOpinionLoading(false);
       setHasAutoSummarized(true);
     }
-  };
+  }, [comments, currentBill.description, currentBill.title, opinionLoading]);
 
   useEffect(() => {
     if (hasAutoSummarized) return;
     if (!comments.length) return;
     handleGenerateOpinionSummary();
-  }, [comments.length, hasAutoSummarized]);
+  }, [comments.length, handleGenerateOpinionSummary, hasAutoSummarized]);
 
   const imgSrc = currentBill.image_blob ? bytesToBase64(currentBill.image_blob) : null;
 

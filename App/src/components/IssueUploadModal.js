@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { X, Upload, MapPin, Navigation } from "lucide-react";
 import {
@@ -25,7 +25,6 @@ export default function IssueUploadModal({ onClose }) {
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [mapInitialized, setMapInitialized] = useState(false);
-  const [currentLocation, setCurrentLocation] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [locationAddress, setLocationAddress] = useState("");
   const [politician, setPolitician] = useState({
@@ -58,29 +57,20 @@ export default function IssueUploadModal({ onClose }) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          setCurrentLocation({ lat: latitude, lng: longitude });
           setSelectedLocation({ lat: latitude, lng: longitude });
           reverseGeocodeLocation(latitude, longitude);
         },
         (error) => {
           console.error("Geolocation error:", error);
           // Default to India center
-          setCurrentLocation({ lat: 20.5937, lng: 78.9629 });
           setSelectedLocation({ lat: 20.5937, lng: 78.9629 });
         }
       );
     }
   }, []);
 
-  // Initialize map when component and location data are ready
-  useEffect(() => {
-    if (mapRef.current && selectedLocation && !mapInitialized && window.google) {
-      initializeMap();
-    }
-  }, [selectedLocation, mapInitialized]);
-
-  const initializeMap = () => {
-    if (!window.google || !mapRef.current) return;
+  const initializeMap = useCallback(() => {
+    if (!window.google || !mapRef.current || !selectedLocation) return;
 
     const mapOptions = {
       zoom: 15,
@@ -123,7 +113,14 @@ export default function IssueUploadModal({ onClose }) {
     });
 
     setMapInitialized(true);
-  };
+  }, [selectedLocation]);
+
+  // Initialize map when component and location data are ready
+  useEffect(() => {
+    if (mapRef.current && selectedLocation && !mapInitialized && window.google) {
+      initializeMap();
+    }
+  }, [initializeMap, mapInitialized, selectedLocation]);
 
   const reverseGeocodeLocation = async (lat, lng) => {
     if (!window.google) return;
@@ -157,7 +154,6 @@ export default function IssueUploadModal({ onClose }) {
       navigator.geolocation.getCurrentPosition((position) => {
         const { latitude, longitude } = position.coords;
         setSelectedLocation({ lat: latitude, lng: longitude });
-        setCurrentLocation({ lat: latitude, lng: longitude });
         reverseGeocodeLocation(latitude, longitude);
 
         if (mapInstanceRef.current && markerRef.current) {

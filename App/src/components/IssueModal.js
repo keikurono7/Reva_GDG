@@ -170,6 +170,7 @@ export default function IssueModal({ item, onClose }) {
 
               {mapUrl ? (
                 <iframe
+                  title="Issue location map"
                   className="h-56 w-full rounded-2xl sm:h-72"
                   frameBorder="0"
                   style={{ border: 0 }}
