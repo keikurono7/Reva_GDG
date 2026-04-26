@@ -765,6 +765,92 @@ function compactToolResult(result) {
   return compact;
 }
 
+function isHotTopicsQuestion(text) {
+  const q = normalize(text);
+  return /\b(hot|top|trending|popular)\b/.test(q) && /\b(discussion|topic|debate|chat)\b/.test(q);
+}
+
+function extractRecordTitle(record) {
+  return (
+    record?.title ||
+    record?.name ||
+    record?.topic ||
+    record?.description ||
+    record?.id ||
+    "Untitled"
+  );
+}
+
+function extractDetailsToShare({ userText, toolExecutions }) {
+  const details = [];
+
+  toolExecutions.forEach((item) => {
+    const records = Array.isArray(item?.result?.records) ? item.result.records : [];
+    if (!records.length) return;
+
+    const collection = item?.args?.collection_name || item?.result?.collection || "records";
+    records.forEach((record) => {
+      details.push({
+        collection,
+        id: record?.id || null,
+        title: extractRecordTitle(record),
+        description: record?.description || "",
+      });
+    });
+  });
+
+  const unique = [];
+  const seen = new Set();
+  details.forEach((item) => {
+    const key = normalize(`${item.collection}|${item.id}|${item.title}`);
+    if (seen.has(key)) return;
+    seen.add(key);
+    unique.push(item);
+  });
+
+  let selected = unique;
+  if (isHotTopicsQuestion(userText)) {
+    const discussionOnly = unique.filter((item) => item.collection === "discussionTopics");
+    selected = discussionOnly.length ? discussionOnly : unique;
+  }
+
+  const maxItems = isHotTopicsQuestion(userText) ? 3 : 5;
+  selected = selected.slice(0, maxItems);
+
+  const fallbackText = selected.length
+    ? selected
+        .map((item, index) => `${index + 1}. ${item.title}${item.description ? ` - ${item.description}` : ""}`)
+        .join("\n")
+    : "";
+
+  return {
+    itemCount: selected.length,
+    items: selected,
+    fallbackText,
+  };
+}
+
+function isHeaderOnlyReply(text) {
+  const cleaned = String(text || "").trim();
+  if (!cleaned) return true;
+
+  const singleLine = !cleaned.includes("\n");
+  const looksLikeHeader = /^(the\s+top\s+\d+\s+.*(are|is)\s*:?)$/i.test(cleaned);
+  const tooShort = cleaned.length < 45;
+
+  return looksLikeHeader || (singleLine && tooShort);
+}
+
+function composeFallbackFromDetails(userText, detailsToShare) {
+  if (!detailsToShare?.itemCount) return "I could not find enough records to answer that yet.";
+
+  if (isHotTopicsQuestion(userText)) {
+    return `The top ${detailsToShare.itemCount} hot topics in discussion are:\n${detailsToShare.fallbackText}`;
+  }
+
+  return detailsToShare.fallbackText;
+}
+
 function buildSynthesisInstruction() {
   return `
 You are a civic assistant writing the FINAL user-facing answer.
@@ -779,13 +865,18 @@ Rules:
 - Do not list all options unless the user asked for a full comparison.
 - Do not mention phrases like "the user", "the question", "I should", "plan", or "reasoning".
 - Return only the final answer text, with no headings or labels.
+- Use detailsToShare as the primary content source for concrete items.
+- If detailsToShare has items and the user asked for top/hot/list topics, include those items explicitly.
 `.trim();
 }
 
 async function synthesizeFinalAnswer({ userText, draftReply, toolExecutions }) {
+  const detailsToShare = extractDetailsToShare({ userText, toolExecutions });
+
   const synthesisInput = {
     userQuestion: userText,
     draftAssistantReply: draftReply || "",
+    detailsToShare,
     toolExecutions: toolExecutions.map((item) => ({
       tool: item.tool,
       args: toSerializable(item.args || {}),
@@ -810,11 +901,17 @@ async function synthesizeFinalAnswer({ userText, draftReply, toolExecutions }) {
     ],
     systemInstruction: buildSynthesisInstruction(),
     useTools: false,
-    maxOutputTokens: 160,
+    maxOutputTokens: 240,
     temperature: 0.2,
   });
 
-  return sanitizeAssistantReply(getTextResponse(data));
+  const cleaned = sanitizeAssistantReply(getTextResponse(data));
+
+  if (isHeaderOnlyReply(cleaned) && detailsToShare.itemCount) {
+    return composeFallbackFromDetails(userText, detailsToShare);
+  }
+
+  return cleaned;
 }
 
 async function executeTool(functionCall, context) {

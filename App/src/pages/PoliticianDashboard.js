@@ -299,7 +299,7 @@ export default function PoliticianDashboard() {
 
   const handleLogout = () => {
     localStorage.removeItem("Pratinidhi_user");
-    window.location.href = "/auth";
+    window.location.href = "/";
   };
 
   /* ---------------- Upload new Initiative/Bill ---------------- */

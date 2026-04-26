@@ -324,7 +324,7 @@ function Chatbot() {
             </div>
             <div className="flex items-center gap-2 rounded-2xl rounded-bl-sm border border-slate-200 bg-white px-4 py-3">
               <Loader2 className="h-4 w-4 animate-spin text-yellow-400" />
-              <span className="text-sm text-slate-600">Planning and querying…</span>
+              <span className="text-sm text-slate-600">Thinking…</span>
             </div>
           </motion.div>
         )}
