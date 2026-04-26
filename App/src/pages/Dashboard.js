@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import TopTabs from "./TopTabs";
 import Issues from "./Issues";
 import Bills from "./Bills";
-import Booths from "./Booths";
 import Discussions from "./Discussions";
 import Ministers from "./Ministers";
 import Chatbot from "./Chatbot";
@@ -45,7 +44,6 @@ export default function DashboardPage() {
         <AnimatePresence mode="wait">
           {activeTab === "issues" && <Issues key="issues" />}
           {activeTab === "bills" && <Bills key="bills" />}
-          {activeTab === "booths" && <Booths key="booths" />}
           {activeTab === "discussions" && <Discussions key="discussions" />}
           {activeTab === "ministers" && <Ministers key="ministers" />}
           {activeTab === "chatbot" && <Chatbot key="chatbot" />}

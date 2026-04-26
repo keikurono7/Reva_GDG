@@ -28,6 +28,7 @@ import {
   getDoc
 } from 'firebase/firestore';
 import { app } from '../services/firebase_';
+import Booths from './Booths';
 
 const db = getFirestore(app);
 
@@ -273,7 +274,7 @@ function Ministers() {
   const [ministers, setMinisters] = useState([]);
   const [filteredMinisters, setFilteredMinisters] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('all'); // all, cabinet, state
+  const [activeTab, setActiveTab] = useState('all'); // all, cabinet, state, booths
 
   // Fetch ministers from Firestore
   useEffect(() => {
@@ -333,6 +334,8 @@ function Ministers() {
       results = results.filter(m => m.ministerType === 'cabinet' || m.post?.toLowerCase().includes('minister'));
     } else if (activeTab === 'state') {
       results = results.filter(m => m.ministerType === 'state' || m.post?.toLowerCase().includes('state'));
+    } else if (activeTab === 'booths') {
+      results = [];
     }
 
     setFilteredMinisters(results);
@@ -341,7 +344,8 @@ function Ministers() {
   const tabs = [
     { id: 'all', label: 'All Ministers', icon: Users },
     { id: 'cabinet', label: 'Cabinet Ministers', icon: Award },
-    { id: 'state', label: 'State Ministers', icon: Building2 }
+    { id: 'state', label: 'State Ministers', icon: Building2 },
+    { id: 'booths', label: 'Booths', icon: MapPin }
   ];
 
   return (
@@ -401,8 +405,12 @@ function Ministers() {
           ))}
         </div>
 
+        {activeTab === 'booths' && (
+          <Booths />
+        )}
+
         {/* Loading State */}
-        {loading && (
+        {activeTab !== 'booths' && loading && (
           <div className="text-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto mb-4"></div>
             <p className="text-slate-600">Loading ministers...</p>
@@ -410,14 +418,14 @@ function Ministers() {
         )}
 
         {/* Results Count */}
-        {!loading && (
+        {activeTab !== 'booths' && !loading && (
           <p className="text-slate-600 mb-4">
             Found {filteredMinisters.length} minister{filteredMinisters.length !== 1 ? 's' : ''}
           </p>
         )}
 
         {/* Ministers Grid */}
-        {!loading && filteredMinisters.length > 0 && (
+        {activeTab !== 'booths' && !loading && filteredMinisters.length > 0 && (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredMinisters.map((minister) => (
               <motion.div
@@ -471,7 +479,7 @@ function Ministers() {
         )}
 
         {/* No Results */}
-        {!loading && filteredMinisters.length === 0 && (
+        {activeTab !== 'booths' && !loading && filteredMinisters.length === 0 && (
           <div className="text-center py-20">
             <Search className="w-16 h-16 mx-auto mb-4 text-slate-400" />
             <h3 className="text-2xl font-bold mb-2">No Ministers Found</h3>

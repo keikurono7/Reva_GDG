@@ -13,7 +13,6 @@ import {
 const tabs = [
     { id: "issues", label: "Issues", icon: AlertCircle },
     { id: "bills", label: "Bills", icon: FileText },
-    { id: "booths", label: "Booths", icon: Building2 },
     { id: "discussions", label: "Discussions", icon: MessageSquare },
     { id: "ministers", label: "Ministers", icon: Building2 },
     { id: "chatbot", label: "Chatbot", icon: Bot },
