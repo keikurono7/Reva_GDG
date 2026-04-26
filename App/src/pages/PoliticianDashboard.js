@@ -19,7 +19,8 @@ import {
   Edit,
   Save,
   Edit2,
-  Trash2
+  Trash2,
+  AlertCircle
 } from "lucide-react";
 
 import {
@@ -51,6 +52,7 @@ export default function PoliticianDashboard() {
 
   const [initiatives, setInitiatives] = useState([]);
   const [bills, setBills] = useState([]);
+  const [issues, setIssues] = useState([]);
 
   const [showUpload, setShowUpload] = useState(false);
   const [uploadType, setUploadType] = useState("initiative");
@@ -61,6 +63,12 @@ export default function PoliticianDashboard() {
   const [message, setMessage] = useState("");
 
   const [selectedItem, setSelectedItem] = useState(null);
+
+  // Issue detail modal states
+  const [showIssueDetail, setShowIssueDetail] = useState(false);
+  const [selectedIssue, setSelectedIssue] = useState(null);
+  const [issueStatusUpdate, setIssueStatusUpdate] = useState("");
+  const [updatingIssueStatus, setUpdatingIssueStatus] = useState(false);
 
   // Edit modals
   const [showEditModal, setShowEditModal] = useState(false); // For the comprehensive edit modal
@@ -94,12 +102,13 @@ export default function PoliticianDashboard() {
     futurePlans: ''
   });
 
-  // Tabs configuration - UPDATED with Initiatives and Bills tabs
+  // Tabs configuration - UPDATED with Initiatives, Bills, and Issues tabs
   const tabs = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'initiatives', label: 'Initiatives', icon: Award },
     { id: 'bills', label: 'Bills', icon: FileText },
+    { id: 'issues', label: 'Issues', icon: AlertCircle },
     { id: 'analytics', label: 'Analytics', icon: TrendingUp },
     { id: 'discussions', label: 'Discussions', icon: MessageSquare }
   ];
@@ -179,6 +188,25 @@ export default function PoliticianDashboard() {
       const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
       const filtered = items.filter((x) => x.author === session?.username);
       setBills(filtered);
+    });
+    return () => unsub();
+  }, [session]);
+
+  // Subscribe to issues related to this politician
+  useEffect(() => {
+    if (!session?.name) return;
+    const q = query(collection(db, "issues"), orderBy("created_at", "desc"));
+    const unsub = onSnapshot(q, (snap) => {
+      const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      // Filter issues where the politician (MP or MLA) name matches the current user
+      const filtered = items.filter((x) => {
+        const politicianName = session.name.toLowerCase().trim();
+        const mpName = x.politician?.mp?.toLowerCase().trim() || "";
+        const mlaName = x.politician?.mla?.toLowerCase().trim() || "";
+        return mpName.includes(politicianName) || mlaName.includes(politicianName) || 
+               politicianName.includes(mpName) || politicianName.includes(mlaName);
+      });
+      setIssues(filtered);
     });
     return () => unsub();
   }, [session]);
@@ -507,6 +535,32 @@ export default function PoliticianDashboard() {
     } catch (err) {
       console.error("delete error", err);
       alert("Delete failed");
+    }
+  };
+
+  /* ---------------- Update Issue Status ---------------- */
+  const handleUpdateIssueStatus = async () => {
+    if (!selectedIssue || !issueStatusUpdate) return;
+    
+    setUpdatingIssueStatus(true);
+    try {
+      const issueRef = doc(db, "issues", selectedIssue.id);
+      await updateDoc(issueRef, {
+        status: issueStatusUpdate,
+        updated_at: serverTimestamp()
+      });
+      
+      // Update the local selectedIssue state
+      setSelectedIssue(prev => ({ ...prev, status: issueStatusUpdate }));
+      
+      alert("Issue status updated successfully!");
+      setShowIssueDetail(false);
+      setSelectedIssue(null);
+    } catch (err) {
+      console.error("Error updating issue status:", err);
+      alert("Failed to update issue status");
+    } finally {
+      setUpdatingIssueStatus(false);
     }
   };
 
@@ -889,8 +943,104 @@ export default function PoliticianDashboard() {
 
         {activeTab === "discussions" && <Discussions key="discussions" />}
 
+        {/* Issues Tab */}
+        {activeTab === 'issues' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold">Issues Related to Your Constituency ({issues.length})</h2>
+              <p className="text-slate-600 mt-2">Issues reported by constituents in your area</p>
+            </div>
+
+            {issues.length === 0 ? (
+              <div className="text-center py-20">
+                <AlertCircle className="w-16 h-16 mx-auto mb-4 text-slate-400" />
+                <h3 className="text-2xl font-bold mb-2">No Issues Yet</h3>
+                <p className="text-slate-500 mb-6">No issues have been reported in your constituency</p>
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {issues.map((issue) => {
+                  let img = null;
+                  try {
+                    img = bytesToBase64(issue.image_blob);
+                  } catch (err) {
+                    console.error("Error converting image for issue:", issue.id, err);
+                  }
+
+                  return (
+                    <motion.div
+                      key={issue.id}
+                      whileHover={{ scale: 1.03, y: -4 }}
+                      className="cursor-pointer rounded-3xl border border-white bg-white/92 p-6 shadow-[0_16px_40px_rgba(15,23,42,0.05)] transition"
+                      onClick={() => {
+                        setSelectedIssue(issue);
+                        setIssueStatusUpdate(issue.status || "Open");
+                        setShowIssueDetail(true);
+                      }}
+                    >
+                      {img && (
+                        <img
+                          src={img}
+                          alt={issue.title}
+                          className="mb-4 h-40 w-full rounded-2xl object-cover"
+                          onError={(e) => {
+                            console.error("Image failed to load for issue:", issue.id);
+                            e.target.style.display = "none";
+                          }}
+                        />
+                      )}
+
+                      <div className="mb-3">
+                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                          issue.status === "Open" ? "bg-amber-100 text-amber-700" :
+                          issue.status === "In Progress" ? "bg-blue-100 text-blue-700" :
+                          issue.status === "Resolved" ? "bg-emerald-100 text-emerald-700" :
+                          "bg-slate-100 text-slate-700"
+                        }`}>
+                          {issue.status || "Open"}
+                        </span>
+                      </div>
+
+                      <h3 className="text-xl font-bold mb-2">
+                        {issue.title}
+                      </h3>
+
+                      <p className="truncate text-slate-600 mb-4">
+                        {issue.description}
+                      </p>
+
+                      <div className="space-y-2 mb-4 text-sm text-slate-500">
+                        {issue.politician?.mla && (
+                          <p><strong>MLA:</strong> {issue.politician.mla}</p>
+                        )}
+                        {issue.politician?.mp && (
+                          <p><strong>MP:</strong> {issue.politician.mp}</p>
+                        )}
+                        {issue.author && (
+                          <p><strong>Reported by:</strong> {issue.author}</p>
+                        )}
+                      </div>
+
+                      {issue.location?.address && (
+                        <p className="text-xs text-slate-500 mb-3">📍 {issue.location.address}</p>
+                      )}
+
+                      <button className="w-full px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-semibold hover:shadow-lg transition">
+                        View Details
+                      </button>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
+          </motion.div>
+        )}
+
         {/* Other tabs */}
-        {!['overview', 'profile', 'initiatives', 'bills'].includes(activeTab) && (
+        {!['overview', 'profile', 'initiatives', 'bills', 'issues'].includes(activeTab) && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1251,6 +1401,23 @@ export default function PoliticianDashboard() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Issue Detail Modal */}
+      <AnimatePresence>
+        {showIssueDetail && selectedIssue && (
+          <IssueDetailModal
+            issue={selectedIssue}
+            statusUpdate={issueStatusUpdate}
+            onStatusChange={setIssueStatusUpdate}
+            onSave={handleUpdateIssueStatus}
+            onClose={() => {
+              setShowIssueDetail(false);
+              setSelectedIssue(null);
+            }}
+            updating={updatingIssueStatus}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -1397,6 +1564,148 @@ function ItemEditModal({ item, onClose, onSave }) {
         <div className="mt-4 flex flex-col gap-3 sm:flex-row">
           <button onClick={handleSave} className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold">Save</button>
           <button onClick={onClose} className="px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-700">Cancel</button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+/* Issue Detail Modal - Read-only with Status Update */
+function IssueDetailModal({ issue, statusUpdate, onStatusChange, onSave, onClose, updating }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-2 sm:items-center sm:p-4 overflow-y-auto"
+    >
+      <motion.div
+        initial={{ scale: 0.95, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.95, y: 20 }}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-t-3xl border border-white bg-white text-slate-900 shadow-2xl sm:rounded-3xl sm:my-8"
+      >
+        {/* Header */}
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white/95 p-4 backdrop-blur-sm sm:p-6">
+          <div>
+            <h2 className="text-2xl font-bold sm:text-3xl">{issue.title}</h2>
+            <p className="text-sm text-slate-500 mt-1">Reported by: {issue.author}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-600"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-4 sm:p-6 space-y-6">
+          
+          {/* Issue Image */}
+          {issue.image_blob && (
+            <div>
+              <img
+                src={bytesToBase64(issue.image_blob)}
+                alt={issue.title}
+                className="w-full h-80 object-cover rounded-2xl"
+              />
+            </div>
+          )}
+
+          {/* Description */}
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Description</h3>
+            <p className="text-slate-600 whitespace-pre-wrap">{issue.description}</p>
+          </div>
+
+          {/* Location */}
+          {issue.location && (
+            <div>
+              <h3 className="text-lg font-semibold mb-2">📍 Location</h3>
+              <p className="text-slate-600">{issue.location.address}</p>
+              <p className="text-sm text-slate-500 mt-1">
+                Coordinates: {issue.location.lat?.toFixed(6)}, {issue.location.lng?.toFixed(6)}
+              </p>
+            </div>
+          )}
+
+          {/* Politician Information */}
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Assigned Representatives</h3>
+            <div className="space-y-2">
+              {issue.politician?.mp && (
+                <p className="text-slate-600"><strong>MP:</strong> {issue.politician.mp}</p>
+              )}
+              {issue.politician?.mla && (
+                <p className="text-slate-600"><strong>MLA:</strong> {issue.politician.mla}</p>
+              )}
+              {issue.politician?.constituency && (
+                <p className="text-slate-600"><strong>Constituency:</strong> {issue.politician.constituency}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Current Status Info */}
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Issue Details</h3>
+            <div className="space-y-2">
+              <p className="text-slate-600">
+                <strong>Status:</strong>{' '}
+                <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                  issue.status === "Open" ? "bg-amber-100 text-amber-700" :
+                  issue.status === "In Progress" ? "bg-blue-100 text-blue-700" :
+                  issue.status === "Resolved" ? "bg-emerald-100 text-emerald-700" :
+                  "bg-slate-100 text-slate-700"
+                }`}>
+                  {issue.status || "Open"}
+                </span>
+              </p>
+              {issue.created_at && (
+                <p className="text-slate-600">
+                  <strong>Reported on:</strong> {new Date(issue.created_at.toDate?.() || issue.created_at).toLocaleDateString()}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Status Update Section */}
+          <div className="border-t border-slate-200 pt-6">
+            <h3 className="text-lg font-semibold mb-3">Update Status</h3>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Change Status
+              </label>
+              <select
+                value={statusUpdate}
+                onChange={(e) => onStatusChange(e.target.value)}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-700 focus:border-amber-500 focus:outline-none"
+              >
+                <option value="Open">🟨 Open</option>
+                <option value="In Progress">🔵 In Progress</option>
+                <option value="Resolved">🟢 Resolved</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="sticky bottom-0 border-t border-slate-200 bg-white/95 p-4 backdrop-blur-sm sm:p-6 flex gap-3">
+          <button
+            onClick={onClose}
+            className="flex-1 px-6 py-3 border border-slate-200 bg-white rounded-2xl font-semibold text-slate-700 hover:bg-slate-50 transition-all"
+          >
+            Close
+          </button>
+          <button
+            onClick={onSave}
+            disabled={updating}
+            className="flex-1 px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-2xl font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+          >
+            {updating ? "Updating..." : "Update Status"}
+          </button>
         </div>
       </motion.div>
     </motion.div>
