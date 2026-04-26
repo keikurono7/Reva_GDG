@@ -66,7 +66,7 @@ export default function WelcomePage() {
   ];
 
   const stats = [
-    { label: 'Active Citizens', value: '9M+', icon: Users },
+    { label: 'Active Citizens', value: '14M+', icon: Users },
     { label: 'Constituencies Connected', value: '30+', icon: Globe },
     { label: 'Issue Escalation Speed', value: 'Real-time', icon: Timer },
     { label: 'Transparency Visibility', value: 'Live', icon: Eye }
