@@ -143,7 +143,7 @@ export default function WelcomePage() {
               </h1>
 
               <p className="mx-auto mb-8 max-w-3xl text-base leading-relaxed text-slate-600 sm:text-lg md:mb-12 md:text-2xl">
-                Pratinidhi bridges citizens and elected representatives through real-time consultation, transparent issue tracking, and AI-powered conflict prevention.
+                Pratinidhi bridges citizens and elected representatives through real-time engagement, transparent issue tracking, and AI-powered conflict prevention.
               </p>
 
               <div className="flex justify-center gap-4">
@@ -254,7 +254,7 @@ export default function WelcomePage() {
               </span>
             </h2>
             <p className="mx-auto mb-8 max-w-2xl text-base text-slate-600 sm:mb-10 sm:text-xl">
-              Start reporting issues, participating in consultations, and tracking resolution updates in one shared civic system.
+              Start reporting issues, participating in decision making, and tracking resolution updates in one shared civic system.
             </p>
             <motion.button
               onClick={() => navigate('/auth')}
