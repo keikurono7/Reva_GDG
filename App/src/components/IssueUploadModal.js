@@ -9,6 +9,7 @@ import {
 } from "firebase/firestore";
 
 import { app } from "../services/firebase_";
+import PoliticianSelector from "./PoliticianSelector";
 
 const db = getFirestore(app);
 
@@ -27,6 +28,11 @@ export default function IssueUploadModal({ onClose }) {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [locationAddress, setLocationAddress] = useState("");
+  const [politician, setPolitician] = useState({
+    constituency: "",
+    mp: "",
+    mla: ""
+  });
   const mapRef = useRef(null);
   const markerRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -215,6 +221,11 @@ export default function IssueUploadModal({ onClose }) {
           lng: selectedLocation.lng,
           address: locationAddress || "Location set",
         },
+        politician: {
+          constituency: politician.constituency,
+          mp: politician.mp,
+          mla: politician.mla,
+        },
         status: "Open",
         created_at: serverTimestamp(),
         updated_at: serverTimestamp(),
@@ -230,6 +241,11 @@ export default function IssueUploadModal({ onClose }) {
       setImagePreview(null);
       setSelectedLocation(null);
       setLocationAddress("");
+      setPolitician({
+        constituency: "",
+        mp: "",
+        mla: ""
+      });
       
       onClose();
     } catch (err) {
@@ -296,6 +312,11 @@ export default function IssueUploadModal({ onClose }) {
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-amber-500 focus:outline-none"
               required
             />
+          </div>
+
+          {/* Politician Selector */}
+          <div className="border-t border-slate-200 pt-4">
+            <PoliticianSelector onSelect={setPolitician} />
           </div>
 
           {/* Image Upload */}
