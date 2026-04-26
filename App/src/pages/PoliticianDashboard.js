@@ -106,19 +106,19 @@ export default function PoliticianDashboard() {
   const tabs = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'profile', label: 'Profile', icon: User },
-    { id: 'initiatives', label: 'Initiatives', icon: Award },
+    // { id: 'initiatives', label: 'Initiatives', icon: Award },
     { id: 'bills', label: 'Bills', icon: FileText },
     { id: 'issues', label: 'Issues', icon: AlertCircle },
-    { id: 'analytics', label: 'Analytics', icon: TrendingUp },
+    // { id: 'analytics', label: 'Analytics', icon: TrendingUp },
     { id: 'discussions', label: 'Discussions', icon: MessageSquare }
   ];
 
   // Stats data
   const stats = [
-    { label: 'Total Followers', value: '15.2K', change: '+12%', icon: Users, color: 'from-amber-400 to-orange-500' },
+    // { label: 'Total Followers', value: '15.2K', change: '+12%', icon: Users, color: 'from-amber-400 to-orange-500' },
     { label: 'Initiatives Posted', value: initiatives.length.toString(), change: '+8', icon: Award, color: 'from-yellow-500 to-orange-500' },
     { label: 'Bills Passed', value: bills.length.toString(), change: '+3', icon: FileText, color: 'from-orange-400 to-red-500' },
-    { label: 'Engagement Rate', value: '87%', change: '+5%', icon: TrendingUp, color: 'from-amber-500 to-orange-500' }
+    // { label: 'Engagement Rate', value: '87%', change: '+5%', icon: TrendingUp, color: 'from-amber-500 to-orange-500' }
   ];
 
 
@@ -755,7 +755,7 @@ export default function PoliticianDashboard() {
             <div className="mb-8">
               <h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
               <div className="grid md:grid-cols-3 gap-4">
-                <motion.button
+                {/* <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => { setUploadType("initiative"); setShowUpload(true); }}
@@ -766,7 +766,7 @@ export default function PoliticianDashboard() {
                     <p className="font-semibold">Create New Initiative</p>
                     <p className="text-sm text-slate-500">Share your initiatives</p>
                   </div>
-                </motion.button>
+                </motion.button> */}
 
                 <motion.button
                   whileHover={{ scale: 1.02 }}
@@ -829,7 +829,7 @@ export default function PoliticianDashboard() {
           </motion.div>
         )}
 
-        {/* Initiatives Tab */}
+        {/* Initiatives Tab
         {activeTab === 'initiatives' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -883,7 +883,7 @@ export default function PoliticianDashboard() {
               </div>
             )}
           </motion.div>
-        )}
+        )} */}
 
         {/* Bills Tab */}
         {activeTab === 'bills' && (
