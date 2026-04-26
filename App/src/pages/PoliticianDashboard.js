@@ -409,6 +409,9 @@ export default function PoliticianDashboard() {
         description: payload.description,
       };
 
+      const normalizedNextTitle = String(payload.title || "").trim();
+      const normalizedNextDescription = String(payload.description || "").trim();
+
       if (payload.newFile) {
         const raw = await fileToBytes(payload.newFile);
         let u8;
@@ -427,6 +430,49 @@ export default function PoliticianDashboard() {
               updateObj.image_blob = Bytes(u8);
             }
           } catch (e) {}
+        }
+      }
+
+      if (payload.type === "bill") {
+        const snap = await getDoc(docRef);
+        const currentBill = snap.exists() ? snap.data() : {};
+        const normalizedCurrentTitle = String(currentBill.title || "").trim();
+        const normalizedCurrentDescription = String(currentBill.description || "").trim();
+        const contentChanged =
+          normalizedCurrentTitle !== normalizedNextTitle ||
+          normalizedCurrentDescription !== normalizedNextDescription;
+
+        if (contentChanged) {
+          const summary = String(payload.changeSummary || "").trim();
+          if (!summary) {
+            alert("Add a short change summary so citizens can track what changed.");
+            return;
+          }
+
+          const nextVersion = Number(currentBill.version || 1) + 1;
+          const nextChangesCount = Number(currentBill.changesCount || 0) + 1;
+
+          await addDoc(collection(db, "bills", payload.id, "changes"), {
+            version: nextVersion,
+            summary,
+            changedBy: session?.username || currentBill.author || "Government",
+            before: {
+              title: currentBill.title || "",
+              description: currentBill.description || "",
+            },
+            after: {
+              title: payload.title,
+              description: payload.description,
+            },
+            created_at: serverTimestamp(),
+          });
+
+          updateObj.version = nextVersion;
+          updateObj.changesCount = nextChangesCount;
+          updateObj.latestChangeSummary = summary;
+          updateObj.updated_at = serverTimestamp();
+        } else if (payload.newFile) {
+          updateObj.updated_at = serverTimestamp();
         }
       }
 
@@ -1278,8 +1324,13 @@ function DetailModal({ item, renderImgSrc, onClose, onEdit, onPromptDelete }) {
 function ItemEditModal({ item, onClose, onSave }) {
   const [title, setTitle] = useState(item.title || "");
   const [desc, setDesc] = useState(item.description || "");
+  const [changeSummary, setChangeSummary] = useState("");
   const [newFile, setNewFile] = useState(null);
   const [preview, setPreview] = useState(null);
+
+  const contentChanged =
+    String(title || "").trim() !== String(item.title || "").trim() ||
+    String(desc || "").trim() !== String(item.description || "").trim();
 
   useEffect(() => {
     if (newFile) {
@@ -1292,12 +1343,18 @@ function ItemEditModal({ item, onClose, onSave }) {
   }, [newFile]);
 
   const handleSave = () => {
+    if (item.__type === "bill" && contentChanged && !String(changeSummary || "").trim()) {
+      alert("Add a short change summary before publishing a bill revision.");
+      return;
+    }
+
     onSave({
       id: item.id,
       type: item.__type || "initiative",
       title: title,
       description: desc,
-      newFile: newFile || null
+      newFile: newFile || null,
+      changeSummary: changeSummary.trim(),
     });
   };
 
@@ -1315,6 +1372,19 @@ function ItemEditModal({ item, onClose, onSave }) {
 
           <label className="text-sm">Description</label>
           <textarea className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:border-amber-400" rows={4} value={desc} onChange={(e) => setDesc(e.target.value)} />
+
+          {item.__type === "bill" && (
+            <>
+              <label className="text-sm">Change Summary</label>
+              <textarea
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-slate-900 focus:outline-none focus:border-amber-400"
+                rows={3}
+                value={changeSummary}
+                onChange={(e) => setChangeSummary(e.target.value)}
+                placeholder="Describe what changed in this revision so citizens can track it."
+              />
+            </>
+          )}
 
           <label className="text-sm">Replace Image (optional)</label>
           <input type="file" accept="image/*" onChange={(e) => setNewFile(e.target.files?.[0] || null)} />

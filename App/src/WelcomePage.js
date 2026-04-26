@@ -143,7 +143,7 @@ export default function WelcomePage() {
               </h1>
 
               <p className="mx-auto mb-12 max-w-3xl text-xl leading-relaxed text-slate-600 md:text-2xl">
-                Civic Connect bridges citizens and elected representatives through real-time consultation, transparent issue tracking, and AI-powered conflict prevention.
+                Pratinidhi bridges citizens and elected representatives through real-time consultation, transparent issue tracking, and AI-powered conflict prevention.
               </p>
 
               <div className="flex justify-center gap-4">
@@ -153,7 +153,7 @@ export default function WelcomePage() {
                   whileTap={{ scale: 0.95 }}
                   className="flex items-center justify-center space-x-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-8 py-4 text-lg font-bold text-white shadow-[0_18px_45px_rgba(245,158,11,0.24)] transition-all hover:shadow-[0_22px_55px_rgba(245,158,11,0.3)]"
                 >
-                  <span>Enter Civic Connect</span>
+                  <span>Enter Pratinidhi</span>
                   <ChevronRight className="h-5 w-5" />
                 </motion.button>
               </div>
@@ -274,10 +274,10 @@ export default function WelcomePage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500">
               <Sparkles className="h-6 w-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-slate-900">Civic Connect</span>
+            <span className="text-2xl font-bold text-slate-900">Pratinidhi</span>
           </div>
           <p className="mb-2">A transparent civic platform for citizens and representatives.</p>
-          <p className="text-sm">&#169; 2026 Civic Connect. All rights reserved.</p>
+          <p className="text-sm">&#169; 2026 Pratinidhi. All rights reserved.</p>
         </div>
       </footer>
     </div>

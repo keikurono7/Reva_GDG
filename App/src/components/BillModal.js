@@ -42,6 +42,7 @@ export default function BillModal({ item, onClose }) {
   const [changeSummary, setChangeSummary] = useState("");
   const [savingRevision, setSavingRevision] = useState(false);
   const [currentBill, setCurrentBill] = useState(item);
+  const [selectedChangeId, setSelectedChangeId] = useState(null);
 
   useEffect(() => {
     const billRef = doc(db, "bills", item.id);
@@ -73,7 +74,15 @@ export default function BillModal({ item, onClose }) {
       orderBy("created_at", "desc")
     );
     const unsub = onSnapshot(q, (snap) => {
-      setChanges(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+      const nextChanges = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      setChanges(nextChanges);
+      setSelectedChangeId((currentSelected) => {
+        if (nextChanges.length === 0) return null;
+        if (currentSelected && nextChanges.some((change) => change.id === currentSelected)) {
+          return currentSelected;
+        }
+        return nextChanges[0].id;
+      });
     });
     return () => unsub();
   }, [item.id]);
@@ -275,66 +284,6 @@ export default function BillModal({ item, onClose }) {
               <div className="ml-auto font-bold text-amber-600">Score: {score}</div>
             </div>
 
-            <div className="mb-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <div className="mb-2 flex items-center gap-2">
-                <GitCompare className="h-5 w-5 text-amber-600" />
-                <h3 className="text-lg font-bold">Changes</h3>
-              </div>
-
-              {changes.length === 0 ? (
-                <div className="text-sm text-slate-500">
-                  No revisions yet. This bill is still on its original version.
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {changes.map((change) => (
-                    <div key={change.id} className="rounded-xl bg-white p-4">
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <div className="font-semibold">
-                            Version {change.version || "-"} update
-                          </div>
-                          <div className="text-sm text-slate-500">
-                            {change.summary || "No summary provided"}
-                          </div>
-                        </div>
-                        <div className="text-xs text-slate-400 text-right">
-                          <div>{change.changedBy || "Government"}</div>
-                          <div>{formatTimestamp(change.created_at)}</div>
-                        </div>
-                      </div>
-
-                      <div className="mt-4 grid gap-3 md:grid-cols-2">
-                        <div className="rounded-xl border border-rose-200 bg-rose-50 p-3">
-                          <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-rose-700">
-                            Before
-                          </div>
-                          <div className="font-semibold text-slate-800">
-                            {change.before?.title || "-"}
-                          </div>
-                          <div className="mt-1 text-sm text-slate-600">
-                            {change.before?.description || "-"}
-                          </div>
-                        </div>
-
-                        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3">
-                          <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-emerald-700">
-                            After
-                          </div>
-                          <div className="font-semibold text-slate-800">
-                            {change.after?.title || "-"}
-                          </div>
-                          <div className="mt-1 text-sm text-slate-600">
-                            {change.after?.description || "-"}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
             <h3 className="mb-2 text-lg font-bold">Comments</h3>
 
             <div className="mb-3 max-h-60 space-y-2 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50 p-2">
@@ -375,71 +324,112 @@ export default function BillModal({ item, onClose }) {
           </div>
 
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <h3 className="mb-3 text-lg font-bold">Government Revision Panel</h3>
+            <div className="mb-3 flex items-center gap-2">
+              <GitCompare className="h-5 w-5 text-amber-600" />
+              <h3 className="text-lg font-bold">Revisions</h3>
+            </div>
 
-            {canEditBill ? (
-              <div className="space-y-3">
-                <div className="text-sm text-slate-500">
-                  Publish a revised version after reviewing citizen feedback. Each update will
-                  be stored with before/after snapshots in the bill's change timeline.
-                </div>
-
-                <div>
-                  <label className="mb-1 block text-sm font-medium">Updated Title</label>
-                  <input
-                    value={revisionTitle}
-                    onChange={(e) => setRevisionTitle(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-white p-3 outline-none focus:border-amber-300"
-                  />
-                </div>
-
-                <div>
-                  <label className="mb-1 block text-sm font-medium">Updated Description</label>
-                  <textarea
-                    value={revisionDescription}
-                    onChange={(e) => setRevisionDescription(e.target.value)}
-                    rows={7}
-                    className="w-full rounded-xl border border-slate-200 bg-white p-3 outline-none focus:border-amber-300"
-                  />
-                </div>
-
-                <div>
-                  <label className="mb-1 block text-sm font-medium">Change Summary</label>
-                  <textarea
-                    value={changeSummary}
-                    onChange={(e) => setChangeSummary(e.target.value)}
-                    rows={3}
-                    placeholder="Example: Clarified compensation clause after citizen feedback."
-                    className="w-full rounded-xl border border-slate-200 bg-white p-3 outline-none focus:border-amber-300"
-                  />
-                </div>
-
-                <button
-                  onClick={handleSaveRevision}
-                  disabled={savingRevision}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 font-semibold text-white disabled:opacity-50"
-                >
-                  <Save className="h-5 w-5" />
-                  {savingRevision ? "Publishing..." : "Publish Revision"}
-                </button>
-              </div>
+            {changes.length === 0 ? (
+              <div className="text-sm text-slate-500">No revisions yet.</div>
             ) : (
-              <div className="text-sm text-slate-500">
-                Only the bill author can publish official revisions. Citizens can still use
-                comments to suggest what should change.
-              </div>
+              <>
+                <div className="mb-3 max-h-64 space-y-2 overflow-y-auto pr-1">
+                  {changes.map((change) => {
+                    const active = change.id === selectedChangeId;
+                    return (
+                      <div
+                        key={change.id}
+                        className={`w-full rounded-xl border px-3 py-3 text-left text-sm transition ${
+                          active
+                            ? "border-amber-400 bg-amber-50"
+                            : "border-slate-200 bg-white hover:border-amber-300"
+                        }`}
+                      >
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setSelectedChangeId((prev) => (prev === change.id ? null : change.id))
+                          }
+                          className="w-full text-left"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <div className="font-semibold text-slate-800">
+                                Version {change.version || "-"}
+                              </div>
+                              <div className="mt-1 line-clamp-2 text-xs text-slate-600">
+                                {change.summary || "No summary provided"}
+                              </div>
+                            </div>
+                            <div className="text-right text-[11px] text-slate-400">
+                              <div>{change.changedBy || "Government"}</div>
+                              <div>{formatTimestamp(change.created_at)}</div>
+                            </div>
+                          </div>
+                        </button>
+
+                        {active && (
+                          <div className="mt-3 rounded-xl border border-slate-200 bg-white p-3">
+                            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                              Updated Description
+                            </div>
+                            <div className="whitespace-pre-wrap text-sm text-slate-700">
+                              {change.after?.description || currentBill.description || "-"}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
             )}
 
-            <div className="mt-6 rounded-xl border border-slate-200 bg-white p-3">
-              <div className="text-xs uppercase tracking-wide text-slate-400">Latest change</div>
-              <div className="mt-1 font-semibold text-slate-800">
-                {currentBill.latestChangeSummary || "Initial bill draft published"}
+            {canEditBill ? (
+              <div className="mt-5 border-t border-slate-200 pt-4">
+                <h4 className="mb-3 text-lg font-bold">Publish Revision</h4>
+
+                <div className="space-y-3">
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">Updated Title</label>
+                    <input
+                      value={revisionTitle}
+                      onChange={(e) => setRevisionTitle(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 bg-white p-3 outline-none focus:border-amber-300"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">Updated Description</label>
+                    <textarea
+                      value={revisionDescription}
+                      onChange={(e) => setRevisionDescription(e.target.value)}
+                      rows={7}
+                      className="w-full rounded-xl border border-slate-200 bg-white p-3 outline-none focus:border-amber-300"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">Change Summary</label>
+                    <textarea
+                      value={changeSummary}
+                      onChange={(e) => setChangeSummary(e.target.value)}
+                      rows={3}
+                      className="w-full rounded-xl border border-slate-200 bg-white p-3 outline-none focus:border-amber-300"
+                    />
+                  </div>
+
+                  <button
+                    onClick={handleSaveRevision}
+                    disabled={savingRevision}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 font-semibold text-white disabled:opacity-50"
+                  >
+                    <Save className="h-5 w-5" />
+                    {savingRevision ? "Publishing..." : "Publish Revision"}
+                  </button>
+                </div>
               </div>
-              <div className="mt-2 text-sm text-slate-500">
-                Version {currentBill.version || 1} | {currentBill.changesCount || 0} tracked
-                revision{Number(currentBill.changesCount || 0) === 1 ? "" : "s"}
-              </div>
-            </div>
+            ) : null}
           </div>
         </div>
       </motion.div>
